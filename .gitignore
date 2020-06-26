@@ -3,11 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Idea software family
+.idea/
+
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -26,6 +30,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -67,6 +72,16 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+*,cover
+
+# end-to-end testing
+.e2e_screenshots
+
+# Translations
+*.mo
+
+# Django stuff:
+*.log
 
 # Sphinx documentation
 docs/_build/
@@ -127,3 +142,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+# Vim swapfiles
+.*.sw?
+
+data/
+
+.vscode/

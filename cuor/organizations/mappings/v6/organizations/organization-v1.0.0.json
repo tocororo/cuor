@@ -1,0 +1,66 @@
+{
+  "mappings": {
+    "organization-v1.0.0": {
+      "date_detection": false,
+      "numeric_detection": false,
+      "properties": {
+        "$schema": {
+          "type": "text",
+          "index": false
+        },
+        "id": {
+          "type": "keyword"
+        },
+        "identifiers": {
+          "type": "object",
+          "properties": {
+            "idtype": {
+              "type": "keyword"
+            },
+            "value": {
+              "type": "keyword"
+            }
+          }
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "aliases": {
+          "type": "keyword"
+        },
+        "acronyms": {
+          "type": "keyword"
+        },
+        "types": {
+          "type": "keyword"
+        },
+        "established": {
+          "type": "keyword"
+        },
+        "addresses": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "keyword"
+            },
+            "country": {
+              "type": "keyword"
+            },
+            "state": {
+              "type": "keyword"
+            },
+            "country_code": {
+              "type": "keyword"
+            },
+            "state_code": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}
