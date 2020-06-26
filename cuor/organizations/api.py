@@ -15,7 +15,10 @@ from uuid import uuid4
 from invenio_jsonschemas import current_jsonschemas
 from invenio_pidstore.errors import PIDDoesNotExistError
 from invenio_pidstore.resolver import Resolver
+
 from invenio_records_files.api import Record as FilesRecord
+#from invenio_records.api import Record
+
 from invenio_indexer.api import RecordIndexer
 
 from invenio_db import db
@@ -93,7 +96,6 @@ class OrganizationRecord(FilesRecord):
     def create(cls, data, id_, dbcommit=False, reindex=False, **kwargs):
         """Create a new OrganizationRecord."""
         data['$schema'] = current_jsonschemas.path_to_url(cls._schema)
-
         if not id_:
             id_ = uuid4()
 

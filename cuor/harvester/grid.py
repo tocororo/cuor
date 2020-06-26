@@ -1,18 +1,7 @@
 import json
 import os
 from flask import current_app
-
-
-from cuor.organizations.api import OrganizationRecord
-
-
-def remove_nulls(d):
-    return {k: v for k, v in d.items() if v is not None}
-
-
-def _assing_if_exist(data, record, field):
-    if field in record:
-        data[field] = record[field]
+from cuor.harvester.general import remove_nulls,_assing_if_exist, insert_in_cuor
 
 
 def _get_ids(inst, idname, idcode):
@@ -68,15 +57,8 @@ def load_active(grid):
             ids.extend(_get_ids(inst, 'Wikidata', 'wkdata'))
             ids.extend(_get_ids(inst, 'ROR', 'ror'))
             data['identifiers'] = ids
-            try:
-                OrganizationRecord.create_or_update(None, data, dbcommit=True, reindex=True)
-            except Exception as e:
-                print(e)
-                print("------------")
-                print(data)
-                print("------------")
-                print(inst)
-                print("------------")
+
+            insert_in_cuor(data, inst)
 
 
 def load_redirect(grid):

@@ -22,3 +22,4 @@ Cuban Organizations Registry
 Further documentation is available on
 https://cuor.readthedocs.io/
 
+In order to import ONEI data from excell files you need add pandas and xlrd extension to virtual enviroment

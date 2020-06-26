@@ -31,7 +31,9 @@
               "isni",
               "orgref",
               "fudref",
-              "reup"
+              "reup",
+              "orgaid",
+              "uniid"
             ]
           },
           "value": {
@@ -49,7 +51,8 @@
       "description": "For an active institute, this is always set to active",
       "enum": [
         "active",
-        "closed",
+        "obsolete",
+        "redirected",
         "unknown"
       ]
     },
@@ -152,7 +155,9 @@
                     "isni",
                     "orgref",
                     "fundref",
-                    "reup"
+                    "reup",
+                    "orgaid",
+                    "uniid"
                   ]
                 },
                 "value": {
@@ -180,7 +185,7 @@
     "addresses": {
       "type": "array",
       "description": "An array of addresses associated with the institute",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "type": "object",
         "additionalProperties": true,
@@ -334,6 +339,31 @@
           }
         }
       }
+    },
+    "redirect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "idtype": {
+          "description": "identifier type",
+          "type": "string",
+          "enum": [
+            "grid",
+            "wkdata",
+            "ror",
+            "isni",
+            "orgref",
+            "fudref",
+            "reup",
+            "orgaid",
+            "uniid"
+          ]
+        },
+        "value": {
+          "type": "string"
+        }
+      }
     }
   }
 }
+

@@ -22,7 +22,9 @@ identifiers_schemas = [
         "isni",
         "fudref",
         "orgref",
-        "reup"
+        "reup",
+        "orgaid",
+        "uniid",
     ]
 
 
