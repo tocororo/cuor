@@ -13,8 +13,10 @@ import traceback
 from uuid import uuid4
 
 from invenio_jsonschemas import current_jsonschemas
-from invenio_pidstore.errors import PIDDoesNotExistError
+from invenio_pidstore.errors import PIDDoesNotExistError, PIDDeletedError
 from invenio_pidstore.resolver import Resolver
+from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+from sqlalchemy.orm.exc import NoResultFound 
 
 from invenio_records_files.api import Record as FilesRecord
 #from invenio_records.api import Record
@@ -55,8 +57,9 @@ class OrganizationRecord(FilesRecord):
             pass
         if IDENTIFIERS_FIELD in data:
             for schema in identifiers_schemas:
-                for identifier in data[IDENTIFIERS_FIELD]:
+                for identifier in data[IDENTIFIERS_FIELD]:                    
                     if schema == identifier[IDENTIFIERS_FIELD_TYPE]:
+                        #print("identifier ------    ", identifier)
                         resolver.pid_type = schema
                         try:
                             persistent_identifier, org = resolver.resolve(str(identifier[IDENTIFIERS_FIELD_VALUE]))
@@ -70,15 +73,40 @@ class OrganizationRecord(FilesRecord):
                                 return org, 'updated'
                         except PIDDoesNotExistError as pidno:
                             print("PIDDoesNotExistError:  {0} == {1}".format(schema, str(identifier[IDENTIFIERS_FIELD_VALUE])))
+                        except (PIDDeletedError, NoResultFound) as ex:
+                             cls.__delete_pids_without_object(data[IDENTIFIERS_FIELD])
                         except Exception as e:
                             print('-------------------------------')
-                            print(str(e))
+                            #print(str(e))
                             print(traceback.format_exc())
                             print('-------------------------------')
                             pass
         print("no pids found, creating organization")
         created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
         return created_org, 'created'
+    
+    @classmethod
+    def __delete_pids_without_object(cls, pid_list):
+        try:
+            # print('pids list: ')
+            # print(pid_list)
+            if pid_list and len(pid_list) > 0:
+                for identifier in pid_list:
+                    pid_type = identifier[IDENTIFIERS_FIELD_TYPE]
+                    pid_value = identifier[IDENTIFIERS_FIELD_VALUE]
+                    # print('pid type deleting: ')
+                    # print(pid_type)
+                    # print(pid_value)
+                    pid_item = PersistentIdentifier.get(pid_type, pid_value)
+                    pid_item.status = PIDStatus.NEW
+                    #print('getting pid item: ')
+                    
+                    if pid_item.delete():
+                        db.session.commit()
+                        #print("***************** DELETED!!!!")
+        except Exception as e:
+            print("-------- DELETING PID ERROR ------------")
+            print(traceback.format_exc())
 
     def update(self, data, dbcommit=False, reindex=False,):
         """Update data for record."""

@@ -16,8 +16,8 @@ def insert_in_cuor(data, inst):
     except Exception as e:
         print(e)
         print("------------")
-        print(data)
-        print("------------")
-        print(inst)
-        print("------------")
-        print(traceback.format_exc())
+        #print(data)
+        #print("------------")
+        #print(inst)
+        #print("------------")
+        #print(traceback.format_exc())
