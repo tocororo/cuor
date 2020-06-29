@@ -100,66 +100,66 @@ def get_top_organizations():
         for item in top_organizations.values():
             count=0
             entrada = pd.read_excel(item["path"], item["sheet"])
+            if item["col"] == 'ORGA' or (item["col"] == 'UNI' and not str(entrada['CODIGO'][0]) == '999'):
+                for archivo in entrada['CODIGO']:
+                    las_siglas = []
+                    siglas = str(entrada['CORTO'][count])
+                    #print('siglas: ', str(siglas))
+                    if not siglas.isalnum():
+                        siglas = siglas.replace("-", "").strip()
+                        #print("cambio: ", siglas)
+                    if len(siglas) > 0:
+                        las_siglas.append(siglas)
+                    data = {
+                        "name": entrada['DESC'][count],
+                        "acronyms": las_siglas,
+                        "addresses": [],
+                        "labels": [{
+                            "label": entrada['DESC'][count],
+                            "iso639": "es",
+                        }]
+                    }
 
-            for archivo in entrada['CODIGO']:
-                las_siglas = []
-                siglas = str(entrada['CORTO'][count])
-                #print('siglas: ', str(siglas))
-                if not siglas.isalnum():
-                    siglas = siglas.replace("-", "").strip()  
-                    #print("cambio: ", siglas)              
-                if len(siglas) > 0:
-                    las_siglas.append(siglas)
-                data = {
-                    "name": entrada['DESC'][count],
-                    "acronyms": las_siglas,
-                    "addresses": [],
-                    "labels": [{
-                        "label": entrada['DESC'][count],
-                        "iso639": "es",
-                    }]
-                }
+                    active = False
+                    if "NOactivo" in entrada.keys() and not entrada['NOactivo'][count]:
+                        active = True
+                    if "Activo" in entrada.keys() and str.lower(entrada["Activo"][count]) != "no":
+                        active = True
 
-                active = False
-                if "NOactivo" in entrada.keys() and not entrada['NOactivo'][count]:
-                    active = True
-                if "Activo" in entrada.keys() and str.lower(entrada["Activo"][count]) != "no":
-                    active = True
+                    if active:
+                        data["status"] = "active"
+                    else:
+                        data["status"] = "obsolete"
 
-                if active:
-                    data["status"] = "active"
-                else:
-                    data["status"] = "obsolete"
+                    ids = []
+                    ids.append({
+                        'idtype': item["id_type"],
+                        'value': str(item["id_type"]) + '.' + str(archivo)
+                    })
+                    data['identifiers'] = ids
 
-                ids = []
-                ids.append({
-                    'idtype': item["id_type"],
-                    'value': str(item["id_type"]) + '.' + str(archivo)
-                })
-                data['identifiers'] = ids
+                    data['relationships'] = []
+                    for child_item in lower_organizations.values():
+                        children = get_list_when_field_meet(child_item, col=item["col"], value=archivo)
+                        if len(children) > 0:
+                            for rel in children.values():
+                                nrel = dict()
+                                nrel['label'] = rel['DESCC']
+                                nrel['type'] = 'child'
+                                nrel['identifiers'] = [{
+                                    'idtype': "reup",
+                                    'value': "reup" + "." + str(rel['COD'])
+                                }]
+                                data['relationships'].append(nrel)
 
-                data['relationships'] = []
-                for child_item in lower_organizations.values():
-                    children = get_list_when_field_meet(child_item, col=item["col"], value=archivo)
-                    if len(children) > 0:
-                        for rel in children.values():
-                            nrel = dict()
-                            nrel['label'] = rel['DESCC']
-                            nrel['type'] = 'child'
-                            nrel['identifiers'] = [{
-                                'idtype': "reup",
-                                'value': "reup" + "." + str(rel['COD'])
-                            }]
-                            data['relationships'].append(nrel)
-
-                count = count+1
-                #print("*********************8")
-                #print("*********************8")
-                #print(data)
-                #print("*********************8")
-                print("*********************8")
-                logger.info("Going well creating top organization codigo: {}".format(archivo), extra=data)
-                insert_in_cuor(data, {})
+                    count = count+1
+                    #print("*********************8")
+                    #print("*********************8")
+                    #print(data)
+                    #print("*********************8")
+                    print("*********************8")
+                    logger.info("Going well creating top organization codigo: {}".format(archivo), extra=data)
+                    insert_in_cuor(data, {})
     except Exception as e:
         print("*********************")
         print("Error adding top organizations")
@@ -181,8 +181,8 @@ def get_lower_organizations():
                 siglas = str(entrada['SIGLAS'][count])
                 #print('siglas: ', str(siglas))
                 if not siglas.isalnum():
-                    siglas = siglas.replace("-", "").strip()  
-                    #print("cambio: ", siglas)              
+                    siglas = siglas.replace("-", "").strip()
+                    #print("cambio: ", siglas)
                 if len(siglas) > 0:
                     las_siglas.append(siglas)
 
@@ -201,10 +201,10 @@ def get_lower_organizations():
 
                 if isinstance(date_str, datetime.datetime):
                     datetime_obj = date_str
-                else:                    
+                else:
                     try:
                         format_str1 = '%d/%m/%Y'  # The format
-                        format_str2 = '%Y%m%d'  # The format                    
+                        format_str2 = '%Y%m%d'  # The format
                         print(date_str)
                         datetime_obj = datetime.datetime.strptime(date_str, format_str1)
                     except:
@@ -248,39 +248,55 @@ def get_lower_organizations():
                 data['addresses'] = addresses
 
                 #para las relationships debe hacerse algo parecido al resolver, ver que es
-                data['relationships'] = []
+                relationships = []
                 organism = None
                 union = None
-                #pid_orga, organism = resolver.resolve(
-                #    top_organizations["organismos"]["id_type"] + '.' + str(entrada['ORGA'][count])
-                #)
+
                 resolver = Resolver(
                     pid_type=top_organizations["organismos"]["id_type"],
                     object_type=ORGANIZATION_TYPE,
                     getter=OrganizationRecord.get_record,
                 )
-                
-                #pid_uni, union = resolver.resolve(
-                #    top_organizations["uniones"]["id_type"] + '.' + str(entrada['UNI'][count])
-                #)
+                try:
+                    pid_organism = top_organizations["organismos"]["id_type"] + "." + str(entrada['ORGA'][count])
+                    pid_organism, organism = resolver.resolve(pid_organism)
+                    if organism:
+                        #print("pid: ", pid_organism)
+                        #print("organismo: ", organism)
+                        nrel = {}
+                        nrel["label"] = organism["name"]
+                        nrel["type"] = "parent"
+                        nrel["identifiers"] = organism["identifiers"]
+                        relationships.append(nrel)
+                        #print("nrel:  ")
+                        #print(nrel)
+                        #print(relationships)
+                except Exception as eo:
+                    print(str(eo))
 
-                if organism:
-                    nrel = dict()
-                    nrel['label'] = organism['label']
-                    nrel['type'] = 'parent'
-                    nrel['identifiers'] = organism["identifiers"]
-                    data['relationships'].append(nrel)
+                try:
+                    if str(entrada['UNI'][count]) != '999':
+                        resolver.pid_type = top_organizations["uniones"]["id_type"]
+                        pid_union = top_organizations["uniones"]["id_type"] + "." + str(entrada['UNI'][count])
+                        pid_union, union = resolver.resolve(pid_union)
+                        if union:
+                            #print("pid: ", pid_union)
+                            #print("union: ", union)
+                            nrel = dict()
+                            nrel['label'] = union['name']
+                            nrel['type'] = 'parent'
+                            nrel['identifiers'] = union["identifiers"]
+                            relationships.append(nrel)
+                            #print("nrel:  ")
+                            #print(nrel)
+                            #print(relationships)
+                except Exception as eu:
+                    print(str(eu))
 
-                if union:
-                    nrel = dict()
-                    nrel['label'] = union['label']
-                    nrel['type'] = 'parent'
-                    nrel['identifiers'] = union["identifiers"]
-                    data['relationships'].append(nrel)
-
+                data['relationships'] = relationships
                 count = count+1
                 #print(data)
-                insert_in_cuor(data, {})                 
+                insert_in_cuor(data, {})
 
     except Exception as e:
         print("*********************")
