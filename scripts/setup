@@ -26,3 +26,7 @@ pipenv run invenio access allow superuser-access role admin
 
 pipenv run invenio users create --password "1qazxsw2" --active  eduardo.arencibia@upr.edu.cu
 pipenv run invenio roles add eduardo.arencibia@upr.edu.cu admin
+
+pipenv run invenio harvester loadgrid
+pipenv run invenio harvester gettoporg
+pipenv run invenio harvester getlowerorg
