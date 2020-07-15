@@ -16,6 +16,7 @@ export FLASK_ENV=development
 pipenv run celery worker -A invenio_app.celery -l INFO & pid_celery=$!
 
 pipenv run invenio run \
+       --port 5001 \
        --cert "$script_path"/../docker/nginx/test.crt \
        --key "$script_path"/../docker/nginx/test.key & pid_server=$!
 
