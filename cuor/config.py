@@ -129,7 +129,7 @@ SEARCH_ELASTIC_HOSTS = [
 # Database
 # ========
 #: Database URI including user and password
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://iroko:iroko@' + IP_POSGRE + '/cuor'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://cuor:cuor@' + IP_POSGRE + '/cuor'
 # JSONSchemas
 # ===========
 #: Hostname used in URLs for local JSONSchemas.
