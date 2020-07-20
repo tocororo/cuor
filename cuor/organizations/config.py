@@ -23,74 +23,6 @@ def _(x):
     return x
 
 
-RECORDS_REST_ENDPOINTS = {
-    'recid': dict(
-        pid_type=ORGANIZATION_PID_TYPE,
-        pid_minter=ORGANIZATION_PID_MINTER,
-        pid_fetcher=ORGANIZATION_PID_FETCHER,
-        default_endpoint_prefix=True,
-        record_class=OrganizationRecord,
-        search_class=OrganizationSearch,
-        indexer_class=RecordIndexer,
-        search_index='organizations',
-        search_type=None,
-        record_serializers={
-            'application/json': ('cuor.organizations.serializers'
-                                 ':json_v1_response'),
-        },
-        search_serializers={
-            'application/json': ('cuor.organizations.serializers'
-                                 ':json_v1_search'),
-        },
-        record_loaders={
-            'application/json': ('cuor.organizations.loaders'
-                                 ':json_v1'),
-        },
-        list_route='/organizations/',
-        item_route='/organizations/<pid(recid,'
-                   'record_class="cuor.organizations.api.OrganizationRecord")'
-                   ':pid_value>',
-        default_media_type='application/json',
-        max_result_window=10000,
-        error_handlers=dict(),
-        create_permission_factory_imp=allow_all,
-        read_permission_factory_imp=check_elasticsearch,
-        update_permission_factory_imp=allow_all,
-        delete_permission_factory_imp=allow_all,
-        list_permission_factory_imp=allow_all,
-        links_factory_imp='invenio_records_files.'
-                          'links:default_record_files_links_factory',
-    ),
-}
-
-
-"""REST API for cuor."""
-
-RECORDS_UI_ENDPOINTS = dict(
-    recid=dict(
-        pid_type=ORGANIZATION_PID_TYPE,
-        route='/organizations/<pid_value>',
-        template='organizations/organization.html',
-        record_class='cuor.organizations.api.OrganizationRecord',
-    ),
-    recid_previewer=dict(
-        pid_type=ORGANIZATION_PID_TYPE,
-        route='/organizations/<pid_value>/preview/<path:filename>',
-        view_imp='invenio_previewer.views.preview',
-        record_class='cuor.organizations.api.OrganizationRecord',
-    ),
-    recid_files=dict(
-        pid_type=ORGANIZATION_PID_TYPE,
-        route='/organizations/<pid_value>/files/<path:filename>',
-        view_imp='invenio_records_files.utils.file_download_ui',
-        record_class='cuor.organizations.api.OrganizationRecord',
-    ),
-)
-"""Records UI for cuor."""
-
-SEARCH_UI_JSTEMPLATE_RESULTS = 'templates/organizations/results.html'
-"""Result list template."""
-
 PIDSTORE_RECID_FIELD = 'id'
 
 CUOR_ENDPOINTS_ENABLED = True
@@ -141,7 +73,7 @@ RECORDS_REST_DEFAULT_SORT = dict(
 
 RECORDS_FILES_REST_ENDPOINTS = {
     'RECORDS_REST_ENDPOINTS': {
-        'recid': '/files'
+        'orgid': '/files'
     },
 }
 """Records files integration."""
