@@ -4,9 +4,9 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_pidstore.providers.base import BaseProvider
 from uuid import uuid4
 
-ORGANIZATION_PID_TYPE = "recid"
-ORGANIZATION_PID_MINTER = "recid"
-ORGANIZATION_PID_FETCHER = "recid"
+ORGANIZATION_PID_TYPE = "orgid"
+ORGANIZATION_PID_MINTER = "orgid"
+ORGANIZATION_PID_FETCHER = "orgid"
 ORGANIZATION_PID_FIELD = "id"
 ORGANIZATION_TYPE = "org"
 

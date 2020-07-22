@@ -23,6 +23,14 @@ from invenio_previewer.config import PREVIEWER_PREFERENCE as BASE_PREFERENCE
 from cuor.configvariables import *
 import os
 
+from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
+from cuor.organizations.search import OrganizationSearch
+from cuor.organizations.api import OrganizationRecord
+from invenio_indexer.api import RecordIndexer
+from invenio_records_rest.facets import terms_filter
+from invenio_records_rest.utils import allow_all, check_elasticsearch
+
+
 def _(x):
     """Identity function used to trigger string extraction."""
     return x
@@ -181,3 +189,79 @@ APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
 }
 
 WSGI_PROXIES = 2
+
+
+RECORDS_REST_ENDPOINTS = {
+    'orgid': dict(
+        pid_type=ORGANIZATION_PID_TYPE,
+        pid_minter=ORGANIZATION_PID_MINTER,
+        pid_fetcher=ORGANIZATION_PID_FETCHER,
+        default_endpoint_prefix=True,
+        record_class=OrganizationRecord,
+        search_class=OrganizationSearch,
+        indexer_class=RecordIndexer,
+        search_index='organizations',
+        search_type=None,
+        record_serializers={
+            'application/json': ('cuor.organizations.serializers'
+                                 ':json_v1_response'),
+        },
+        search_serializers={
+            'application/json': ('cuor.organizations.serializers'
+                                 ':json_v1_search'),
+        },
+        record_loaders={
+            'application/json': ('cuor.organizations.loaders'
+                                 ':json_v1'),
+        },
+        list_route='/organizations/',
+        item_route='/organizations/<pid(orgid,'
+                   'record_class="cuor.organizations.api.OrganizationRecord")'
+                   ':pid_value>',
+        default_media_type='application/json',
+        max_result_window=10000,
+        error_handlers=dict(),
+        create_permission_factory_imp=allow_all,
+        read_permission_factory_imp=check_elasticsearch,
+        update_permission_factory_imp=allow_all,
+        delete_permission_factory_imp=allow_all,
+        list_permission_factory_imp=allow_all,
+        links_factory_imp='invenio_records_files.'
+                          'links:default_record_files_links_factory',
+    ),
+}
+
+
+"""REST API for cuor."""
+
+RECORDS_UI_ENDPOINTS = dict(
+    orgid=dict(
+        pid_type=ORGANIZATION_PID_TYPE,
+        route='/organizations/<pid_value>',
+        template='organizations/organization.html',
+        record_class='cuor.organizations.api.OrganizationRecord',
+    ),
+    orgid_previewer=dict(
+        pid_type=ORGANIZATION_PID_TYPE,
+        route='/organizations/<pid_value>/preview/<path:filename>',
+        view_imp='invenio_previewer.views.preview',
+        record_class='cuor.organizations.api.OrganizationRecord',
+    ),
+    orgid_files=dict(
+        pid_type=ORGANIZATION_PID_TYPE,
+        route='/organizations/<pid_value>/files/<path:filename>',
+        view_imp='invenio_records_files.utils.file_download_ui',
+        record_class='cuor.organizations.api.OrganizationRecord',
+    ),
+
+)
+"""Records UI for cuor."""
+
+SEARCH_UI_SEARCH_API = '/api/organizations/'
+SEARCH_UI_SEARCH_INDEX = 'organizations'
+INDEXER_DEFAULT_DOC_TYPE = 'organization-v1.0.0'
+INDEXER_DEFAULT_INDEX = 'organizations-organization-v1.0.0'
+OAISERVER_RECORD_INDEX = 'organizations'
+
+SEARCH_UI_JSTEMPLATE_RESULTS = 'templates/organizations/results.html'
+"""Result list template."""

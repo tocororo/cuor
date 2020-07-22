@@ -22,7 +22,7 @@ def app_config(app_config):
     """Get app config."""
     app_config['RECORDS_FILES_REST_ENDPOINTS'] = {
         'RECORDS_REST_ENDPOINTS': {
-            'recid': '/files'
+            'orgid': '/files'
         }
     }
     app_config['FILES_REST_PERMISSION_FACTORY'] = allow_all
