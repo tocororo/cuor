@@ -172,7 +172,8 @@
             "enum": [
               "parent",
               "related",
-              "child"
+              "child",
+              "other"
             ]
           },
           "label": {
