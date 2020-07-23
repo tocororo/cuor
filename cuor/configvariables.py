@@ -1,7 +1,7 @@
-IP_ELASTIC = '10.118.31.125'
-IP_POSGRE = '10.118.31.44'
-IP_RABBIT = '10.118.31.100'
-IP_REDIS = '10.118.31.237'
+IP_ELASTIC = '10.2.4.62'
+IP_POSGRE = '10.2.4.29'
+IP_RABBIT = '10.2.4.59'
+IP_REDIS = '10.2.4.58'
 
 #: Since HAProxy and Nginx route all requests no matter the host header
 #: provided, the allowed hosts variable is set to localhost. In production it

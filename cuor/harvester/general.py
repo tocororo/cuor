@@ -11,11 +11,11 @@ def _assing_if_exist(data, record, field):
 
 
 def insert_in_cuor(data, inst):
-    try:
-        OrganizationRecord.create_or_update(None, data, dbcommit=True, reindex=True)
-    except Exception as e:
-        print(e)
-        print("------------")
+    # try:
+    OrganizationRecord.create_or_update(None, data, dbcommit=True, reindex=True)
+    # except Exception as e:
+    #     print(e)
+    #     print("------------")
         #print(data)
         #print("------------")
         #print(inst)

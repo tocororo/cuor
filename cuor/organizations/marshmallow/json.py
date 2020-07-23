@@ -46,24 +46,65 @@ class PersonIdsSchemaV1(StrictKeysMixin):
     value = SanitizedUnicode()
 
 
-class ContributorSchemaV1(StrictKeysMixin):
-    """Contributor schema."""
+class IdentifierSchemaV1(StrictKeysMixin):
+    """Ids schema."""
 
-    ids = fields.Nested(PersonIdsSchemaV1, many=True)
-    name = SanitizedUnicode(required=True)
-    role = SanitizedUnicode()
-    affiliations = fields.List(SanitizedUnicode())
-    email = fields.Email()
+    idtype = SanitizedUnicode()
+    value = SanitizedUnicode()
+
+
+class LabelSchemaV1(StrictKeysMixin):
+    """Ids schema."""
+
+    label = SanitizedUnicode()
+    iso639 = SanitizedUnicode()
+
+
+class RelationSchemaV1(StrictKeysMixin):
+    """Ids schema."""
+
+    identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
+    type = SanitizedUnicode()
+    label = SanitizedUnicode()
+
+
+class AddressSchemaV1(StrictKeysMixin):
+    """Ids schema."""
+
+    city = SanitizedUnicode()
+    country = SanitizedUnicode()
+    country_code = SanitizedUnicode()
+    lat = fields.Float()
+    lng = fields.Float()
+    line_1 = SanitizedUnicode()
+    line_2 = SanitizedUnicode()
+    line_3 = SanitizedUnicode()
+    postcode = SanitizedUnicode()
+    primary = SanitizedUnicode()
+    state = SanitizedUnicode()
+    state_code = SanitizedUnicode()
+    
 
 
 class MetadataSchemaV1(StrictKeysMixin):
     """Schema for the record metadata."""
 
     id = PersistentIdentifier()
-    title = SanitizedUnicode(required=True, validate=validate.Length(min=3))
-    keywords = fields.List(SanitizedUnicode(), many=True)
-    publication_date = DateString()
-    contributors = Nested(ContributorSchemaV1, many=True, required=True)
+    identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
+    name = SanitizedUnicode(required=True, validate=validate.Length(min=3))
+    status = SanitizedUnicode()
+    aliases = fields.List(SanitizedUnicode(), many=True)
+    acronyms = fields.List(SanitizedUnicode(), many=True)
+    types = fields.List(SanitizedUnicode(), many=True)
+    wikipedia_url = fields.Url()
+    email_address = fields.Email()
+    ip_addresses = fields.String()
+    established = fields.Integer()
+    links = fields.List(fields.Url(), many=True)
+    labels = Nested(LabelSchemaV1, many=True)
+    relationships = Nested(RelationSchemaV1, many=True)
+    addresses = Nested(AddressSchemaV1, many=True)
+
     _schema = GenFunction(
         attribute="$schema",
         data_key="$schema",

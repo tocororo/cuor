@@ -23,7 +23,7 @@ from invenio_previewer.config import PREVIEWER_PREFERENCE as BASE_PREFERENCE
 from cuor.configvariables import *
 import os
 
-from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
+from cuor.organizations.pidstore import ORGANIZATION_TYPE, ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
 from cuor.organizations.search import OrganizationSearch
 from cuor.organizations.api import OrganizationRecord
 from invenio_indexer.api import RecordIndexer
@@ -190,6 +190,9 @@ APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
 
 WSGI_PROXIES = 2
 
+_ORG_CONVERTER = (
+    'pid(orgid, record_class="cuor.organizations.api.OrganizationRecord")'
+)
 
 RECORDS_REST_ENDPOINTS = {
     'orgid': dict(
@@ -215,9 +218,7 @@ RECORDS_REST_ENDPOINTS = {
                                  ':json_v1'),
         },
         list_route='/organizations/',
-        item_route='/organizations/<pid(orgid,'
-                   'record_class="cuor.organizations.api.OrganizationRecord")'
-                   ':pid_value>',
+        item_route='/organizations/<{0}:pid_value>'.format(_ORG_CONVERTER),
         default_media_type='application/json',
         max_result_window=10000,
         error_handlers=dict(),
