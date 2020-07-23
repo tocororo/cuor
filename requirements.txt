@@ -23,7 +23,6 @@ click==7.1.2
 click-default-group==1.2.2
 coverage==5.1
 cryptography==2.9.2
--e git+https://github.com/tocororo/cuor.git@d48b38d2795a8946041d071bed69643084c82091#egg=cuor
 decorator==4.4.2
 defusedxml==0.6.0
 dnspython==1.16.0
