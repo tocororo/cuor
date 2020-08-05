@@ -31,13 +31,37 @@ CUOR_ENDPOINTS_ENABLED = True
 
 RECORDS_REST_FACETS = dict(
     organizations=dict(
-        aggs=dict(
-            type=dict(terms=dict(field='type')),
-            keywords=dict(terms=dict(field='keywords'))
+        filters=dict(
+            status=terms_filter('status'),
+            types=terms_filter('types'),
+            country=terms_filter('addresses.country'),
+            state=terms_filter('addresses.state'),
         ),
-        post_filters=dict(
-            type=terms_filter('type'),
-            keywords=terms_filter('keywords'),
+        aggs=dict(
+            status=dict(
+                terms=dict(
+                    field='status',
+                    size=5
+                )
+            ),
+            types=dict(
+                terms=dict(
+                    field='types',
+                    size=8
+                )
+            ),
+            country=dict(
+                terms=dict(
+                    field='addresses.country',
+                    size=8
+                )
+            ),
+            state = dict(
+                terms=dict(
+                    field='addresses.state',
+                    size=5
+                )
+            )
         )
     )
 )
