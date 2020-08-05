@@ -266,3 +266,6 @@ OAISERVER_RECORD_INDEX = 'organizations'
 
 SEARCH_UI_JSTEMPLATE_RESULTS = 'templates/organizations/results.html'
 """Result list template."""
+
+
+REST_ENABLE_CORS = True
