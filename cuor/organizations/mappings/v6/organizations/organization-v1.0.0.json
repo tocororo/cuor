@@ -23,13 +23,13 @@
           }
         },
         "name": {
-          "type": "keyword"
+          "type": "text"
         },
         "status": {
           "type": "keyword"
         },
         "aliases": {
-          "type": "keyword"
+          "type": "text"
         },
         "acronyms": {
           "type": "keyword"
@@ -39,6 +39,17 @@
         },
         "established": {
           "type": "keyword"
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "text"
+            },
+            "iso639": {
+              "type": "keyword"
+            }
+          }
         },
         "addresses": {
           "type": "object",

@@ -16,10 +16,10 @@ from invenio_jsonschemas import current_jsonschemas
 from invenio_pidstore.errors import PIDDoesNotExistError, PIDDeletedError
 from invenio_pidstore.resolver import Resolver
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
-from sqlalchemy.orm.exc import NoResultFound 
+from sqlalchemy.orm.exc import NoResultFound
 
 from invenio_records_files.api import Record as FilesRecord
-#from invenio_records.api import Record
+from invenio_records.api import Record
 
 from invenio_indexer.api import RecordIndexer
 
@@ -30,7 +30,7 @@ from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_TYPE
     identifiers_minter
 
 
-class OrganizationRecord(FilesRecord):
+class OrganizationRecord(Record):
     """Custom record."""
 
     _schema = "organizations/organization-v1.0.0.json"
@@ -57,7 +57,7 @@ class OrganizationRecord(FilesRecord):
             pass
         if IDENTIFIERS_FIELD in data:
             for schema in identifiers_schemas:
-                for identifier in data[IDENTIFIERS_FIELD]:                    
+                for identifier in data[IDENTIFIERS_FIELD]:
                     if schema == identifier[IDENTIFIERS_FIELD_TYPE]:
                         #print("identifier ------    ", identifier)
                         resolver.pid_type = schema
@@ -84,7 +84,7 @@ class OrganizationRecord(FilesRecord):
         print("no pids found, creating organization")
         created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
         return created_org, 'created'
-    
+
     @classmethod
     def __delete_pids_without_object(cls, pid_list):
         try:
@@ -100,7 +100,7 @@ class OrganizationRecord(FilesRecord):
                     pid_item = PersistentIdentifier.get(pid_type, pid_value)
                     pid_item.status = PIDStatus.NEW
                     #print('getting pid item: ')
-                    
+
                     if pid_item.delete():
                         db.session.commit()
                         #print("***************** DELETED!!!!")
