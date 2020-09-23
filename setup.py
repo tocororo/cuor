@@ -47,6 +47,9 @@ setup(
             'cuor = cuor.theme.views:blueprint',
             'cuor_records = cuor.organizations.views:blueprint',
         ],
+        'invenio_base.api_blueprints' : [
+            'cuor_records = cuor.organizations.views:api_blueprint',
+        ],
         'invenio_assets.webpack': [
             'cuor_theme = cuor.theme.webpack:theme',
         ],

@@ -12,8 +12,11 @@ from __future__ import absolute_import, print_function
 from operator import itemgetter
 from os.path import splitext
 
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 from invenio_previewer.proxies import current_previewer
+
+from cuor.organizations.api import OrganizationRecord
+from cuor.organizations.serializers import json_v1_response
 
 blueprint = Blueprint(
     'cuor_organizations',
@@ -48,3 +51,30 @@ def select_preview_file(files):
     except KeyError:
         pass
     return selected
+
+
+
+
+api_blueprint = Blueprint(
+    'cuor_api_organizations',
+    __name__,
+    url_prefix='/organizations'
+)
+
+@api_blueprint.route('/pid', methods=['GET'])
+def get_source_by_pid():
+    """Get a source by any PID received as a argument, including UUID"""
+    try:
+        _id = request.args.get('value')
+        pid, org = OrganizationRecord.get_source_by_pid(_id)
+        if not pid or not org:
+            raise Exception('Organization not found')
+
+        return json_v1_response(pid, org)
+        # return jsonify(json_v1.serialize(pid, org))
+
+    except Exception as e:
+        return jsonify({
+            'no pid found':_id,
+        })
+

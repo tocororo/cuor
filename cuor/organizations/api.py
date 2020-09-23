@@ -12,22 +12,20 @@ from __future__ import absolute_import, print_function
 import traceback
 from uuid import uuid4
 
+from invenio_db import db
+from invenio_indexer.api import RecordIndexer
 from invenio_jsonschemas import current_jsonschemas
 from invenio_pidstore.errors import PIDDoesNotExistError, PIDDeletedError
-from invenio_pidstore.resolver import Resolver
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+from invenio_pidstore.resolver import Resolver
+from invenio_records.api import Record
 from sqlalchemy.orm.exc import NoResultFound
 
-from invenio_records_files.api import Record as FilesRecord
-from invenio_records.api import Record
-
-from invenio_indexer.api import RecordIndexer
-
-from invenio_db import db
-
-from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_TYPE, IDENTIFIERS_FIELD, \
-    identifiers_schemas, IDENTIFIERS_FIELD_TYPE, IDENTIFIERS_FIELD_VALUE, organization_uuid_minter, \
-    identifiers_minter
+from cuor.organizations.pidstore import (
+    ORGANIZATION_PID_TYPE, ORGANIZATION_TYPE, IDENTIFIERS_FIELD,
+    identifiers_schemas, IDENTIFIERS_FIELD_TYPE, IDENTIFIERS_FIELD_VALUE, organization_uuid_minter,
+    identifiers_minter,
+)
 
 
 class OrganizationRecord(Record):
@@ -139,3 +137,24 @@ class OrganizationRecord(Record):
                 RecordIndexer().index(org)
         return org
 
+    @classmethod
+    def get_source_by_pid(cls, pid, with_deleted=False):
+        resolver = Resolver(
+            pid_type=ORGANIZATION_PID_TYPE,
+            object_type=ORGANIZATION_TYPE,
+            getter=cls.get_record,
+        )
+        try:
+            return resolver.resolve(str(pid))
+        except Exception:
+            pass
+
+        for pid_type in identifiers_schemas:
+            try:
+                pid_value = pid
+                resolver.pid_type = pid_type
+                return resolver.resolve(pid_value)
+
+            except Exception as e:
+                pass
+        return None
