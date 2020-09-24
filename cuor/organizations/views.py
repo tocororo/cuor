@@ -66,9 +66,9 @@ def get_source_by_pid():
     """Get a source by any PID received as a argument, including UUID"""
     try:
         _id = request.args.get('value')
-        pid, org = OrganizationRecord.get_source_by_pid(_id)
+        pid, org = OrganizationRecord.get_org_by_pid(_id)
         if not pid or not org:
-            raise Exception('Organization not found')
+            raise Exception('')
 
         return json_v1_response(pid, org)
         # return jsonify(json_v1.serialize(pid, org))

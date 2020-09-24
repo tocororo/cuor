@@ -138,23 +138,23 @@ class OrganizationRecord(Record):
         return org
 
     @classmethod
-    def get_source_by_pid(cls, pid, with_deleted=False):
+    def get_org_by_pid(cls, pid_value, with_deleted=False):
         resolver = Resolver(
             pid_type=ORGANIZATION_PID_TYPE,
             object_type=ORGANIZATION_TYPE,
             getter=cls.get_record,
         )
         try:
-            return resolver.resolve(str(pid))
+            return resolver.resolve(str(pid_value))
         except Exception:
             pass
 
         for pid_type in identifiers_schemas:
             try:
-                pid_value = pid
                 resolver.pid_type = pid_type
-                return resolver.resolve(pid_value)
-
+                schemapid, org = resolver.resolve(pid_value)
+                pid = PersistentIdentifier.get(ORGANIZATION_PID_TYPE, org['id'])
+                return pid, org
             except Exception as e:
                 pass
-        return None
+        return None, None
