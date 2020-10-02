@@ -11,9 +11,11 @@ from __future__ import absolute_import, print_function
 
 from invenio_jsonschemas import current_jsonschemas
 from invenio_records_rest.schemas import Nested, StrictKeysMixin
-from invenio_records_rest.schemas.fields import DateString, GenFunction, \
-    PersistentIdentifier, SanitizedUnicode
-from marshmallow import fields, missing, validate
+from invenio_records_rest.schemas.fields import (
+    GenFunction,
+    PersistentIdentifier, SanitizedUnicode,
+)
+from marshmallow import fields, missing, validate, post_dump
 
 from cuor.organizations.api import OrganizationRecord
 
@@ -63,9 +65,18 @@ class LabelSchemaV1(StrictKeysMixin):
 class RelationSchemaV1(StrictKeysMixin):
     """Ids schema."""
 
+    id = fields.UUID(dump_only=True)
     identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
     type = SanitizedUnicode()
     label = SanitizedUnicode()
+
+    @post_dump
+    def dump_id(self, relationship, **kwargs):
+        pidvalue = relationship['identifiers'][0]['value']
+        pid, org = OrganizationRecord.get_org_by_pid(pidvalue)
+        if pid and org:
+            relationship['id'] = str(pid.pid_value)
+        return relationship
 
 
 class AddressSchemaV1(StrictKeysMixin):
@@ -83,7 +94,7 @@ class AddressSchemaV1(StrictKeysMixin):
     primary = SanitizedUnicode()
     state = SanitizedUnicode()
     state_code = SanitizedUnicode()
-    
+
 
 
 class MetadataSchemaV1(StrictKeysMixin):
