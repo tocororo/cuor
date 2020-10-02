@@ -65,6 +65,14 @@ class LabelSchemaV1(StrictKeysMixin):
 class RelationSchemaV1(StrictKeysMixin):
     """Ids schema."""
 
+    identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
+    type = SanitizedUnicode()
+    label = SanitizedUnicode()
+
+
+class RelationSchemaWithIDsV1(StrictKeysMixin):
+    """Ids schema."""
+
     id = fields.UUID(dump_only=True)
     identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
     type = SanitizedUnicode()
@@ -73,6 +81,7 @@ class RelationSchemaV1(StrictKeysMixin):
     @post_dump
     def dump_id(self, relationship, **kwargs):
         pidvalue = relationship['identifiers'][0]['value']
+        # TODO: ver si hay que optimizar esto.
         pid, org = OrganizationRecord.get_org_by_pid(pidvalue)
         if pid and org:
             relationship['id'] = str(pid.pid_value)
@@ -97,7 +106,7 @@ class AddressSchemaV1(StrictKeysMixin):
 
 
 
-class MetadataSchemaV1(StrictKeysMixin):
+class MetadataSchemaBaseV1(StrictKeysMixin):
     """Schema for the record metadata."""
 
     id = PersistentIdentifier()
@@ -123,10 +132,34 @@ class MetadataSchemaV1(StrictKeysMixin):
     )
 
 
-class RecordSchemaV1(StrictKeysMixin):
+class MetadataSchemaV1(MetadataSchemaBaseV1):
+    """Schema for the record metadata."""
+    relationships = Nested(RelationSchemaV1, many=True)
+
+class MetadataSchemaRelIDsV1(MetadataSchemaBaseV1):
+    """Schema for the record metadata."""
+    relationships = Nested(RelationSchemaWithIDsV1, many=True)
+
+
+
+
+class RecordSearchSchemaV1(StrictKeysMixin):
     """Record schema."""
 
     metadata = fields.Nested(MetadataSchemaV1)
+    created = fields.Str(dump_only=True)
+    revision = fields.Integer(dump_only=True)
+    updated = fields.Str(dump_only=True)
+    links = fields.Dict(dump_only=True)
+    id = PersistentIdentifier()
+    files = GenFunction(
+        serialize=files_from_context, deserialize=files_from_context)
+
+
+class RecordSchemaV1(StrictKeysMixin):
+    """Record schema."""
+
+    metadata = fields.Nested(MetadataSchemaRelIDsV1)
     created = fields.Str(dump_only=True)
     revision = fields.Integer(dump_only=True)
     updated = fields.Str(dump_only=True)
