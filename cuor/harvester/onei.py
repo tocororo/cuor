@@ -1,28 +1,32 @@
-import pandas as pd
 import datetime
-import traceback
-import logging
-from cuor.harvester.general import insert_in_cuor
 import json
+import logging
+import os
+import traceback
+
+import pandas as pd
+from flask import current_app
 from invenio_db import db
-from cuor.organizations.api import OrganizationRecord
 from invenio_pidstore.resolver import Resolver
+
+from cuor.harvester.general import insert_in_cuor
+from cuor.organizations.api import OrganizationRecord
 from cuor.organizations.pidstore import ORGANIZATION_TYPE
 
-
-
 logger = logging.getLogger('cuor-onei-harvester')
+
+datadir = current_app.config['CUOR_DATA_DIRECTORY']
 
 
 top_organizations = {
     "organismos": {
-            "path": "data/onei/complementarios/c_orga.xlsx",
+            "path": os.path.join(datadir, "onei/complementarios/c_orga.xlsx"),
             "sheet": "C_orga",
             "col": "ORGA",
             "id_type": "orgaid",
     },
     "uniones": {
-        "path": "data/onei/complementarios/c_uniones_0.xlsx",
+        "path": os.path.join(datadir, "onei/complementarios/c_uniones_0.xlsx"),
         "sheet": "C_Uniones",
         "col": "UNI",
         "id_type": "uniid",
@@ -32,23 +36,23 @@ top_organizations = {
 
 lower_organizations = {
     "re0420": {
-        "path": "data/onei/RE0420.xlsx",
+        "path": os.path.join(datadir, "onei/RE0420.xlsx"),
         "sheet": "RE0420",
         "id_type": "reup",
     },
     "cnoa0420": {
-        "path": "data/onei/CNOA0420.xlsx",
+        "path": os.path.join(datadir, "onei/CNOA0420.xlsx"),
         "sheet": "CNOA0420",
         "id_type": "reup",
     },
     "me0420": {
-        "path": "data/onei/ME0420.xlsx",
+        "path": os.path.join(datadir, "onei/ME0420.xlsx"),
         "sheet": "ME0420",
         "id_type": "reup",
     }
 }
 
-dpa_path = 'data/onei/dpa.json'
+dpa_path = os.path.join(datadir, "onei/dpa.json")
 
 
 def get_list_when_field_meet(path_item, col, value):
