@@ -184,7 +184,7 @@ def get_lower_organizations():
             count=0
             datadir = current_app.config['CUOR_DATA_DIRECTORY']
             entrada = pd.read_excel(os.path.join(datadir, item["path"]), item["sheet"])
-
+            dpa_full_path = os.path.join(datadir, dpa_path)
             for archivo in entrada['COD']:
                 las_siglas = []
                 siglas = str(entrada['SIGLAS'][count])
@@ -239,7 +239,7 @@ def get_lower_organizations():
                 cod_dpa = str(cod_dpa)
                 prov = cod_dpa[0:2]
                 addresses = []
-                with open(dpa_path) as f:
+                with open(dpa_full_path) as f:
                     dpa = json.load(f)
                     one_address = {}
                     if prov != '40':
