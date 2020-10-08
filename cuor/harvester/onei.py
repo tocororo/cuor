@@ -15,18 +15,18 @@ from cuor.organizations.pidstore import ORGANIZATION_TYPE
 
 logger = logging.getLogger('cuor-onei-harvester')
 
-datadir = current_app.config['CUOR_DATA_DIRECTORY']
+
 
 
 top_organizations = {
     "organismos": {
-            "path": os.path.join(datadir, "onei/complementarios/c_orga.xlsx"),
+            "path": "onei/complementarios/c_orga.xlsx",
             "sheet": "C_orga",
             "col": "ORGA",
             "id_type": "orgaid",
     },
     "uniones": {
-        "path": os.path.join(datadir, "onei/complementarios/c_uniones_0.xlsx"),
+        "path": "onei/complementarios/c_uniones_0.xlsx",
         "sheet": "C_Uniones",
         "col": "UNI",
         "id_type": "uniid",
@@ -36,30 +36,31 @@ top_organizations = {
 
 lower_organizations = {
     "re0420": {
-        "path": os.path.join(datadir, "onei/RE0420.xlsx"),
+        "path": "onei/RE0420.xlsx",
         "sheet": "RE0420",
         "id_type": "reup",
     },
     "cnoa0420": {
-        "path": os.path.join(datadir, "onei/CNOA0420.xlsx"),
+        "path": "onei/CNOA0420.xlsx",
         "sheet": "CNOA0420",
         "id_type": "reup",
     },
     "me0420": {
-        "path": os.path.join(datadir, "onei/ME0420.xlsx"),
+        "path": "onei/ME0420.xlsx",
         "sheet": "ME0420",
         "id_type": "reup",
     }
 }
 
-dpa_path = os.path.join(datadir, "onei/dpa.json")
+dpa_path = "onei/dpa.json"
 
 
 def get_list_when_field_meet(path_item, col, value):
     lista = {}
     try:
         count = 0
-        entrada = pd.read_excel(path_item["path"], path_item["sheet"])
+        datadir = current_app.config['CUOR_DATA_DIRECTORY']
+        entrada = pd.read_excel(os.path.join(datadir,path_item["path"]), path_item["sheet"])
 
         for archivo in entrada['COD']:
             if col in entrada.keys() and entrada[col][count] == value:
@@ -77,7 +78,8 @@ def get_list_when_field_meet(path_item, col, value):
 def get_organization_from(path_item, col, value):
     try:
         count = 0
-        entrada = pd.read_excel(path_item["path"], path_item["sheet"])
+        datadir = current_app.config['CUOR_DATA_DIRECTORY']
+        entrada = pd.read_excel(os.path.join(datadir,path_item["path"]), path_item["sheet"])
 
         for archivo in entrada['COD']:
             if col in entrada.keys() and entrada[col][count] == value:
@@ -103,7 +105,9 @@ def get_top_organizations():
     try:
         for item in top_organizations.values():
             count=0
-            entrada = pd.read_excel(item["path"], item["sheet"])
+            datadir = current_app.config['CUOR_DATA_DIRECTORY']
+            entrada = pd.read_excel(os.path.join(datadir, item["path"]), item["sheet"])
+
             if item["col"] == 'ORGA' or (item["col"] == 'UNI' and not str(entrada['CODIGO'][0]) == '999'):
                 for archivo in entrada['CODIGO']:
                     las_siglas = []
@@ -178,7 +182,8 @@ def get_lower_organizations():
     try:
         for item in lower_organizations.values():
             count=0
-            entrada = pd.read_excel(item["path"], item["sheet"])
+            datadir = current_app.config['CUOR_DATA_DIRECTORY']
+            entrada = pd.read_excel(os.path.join(datadir, item["path"]), item["sheet"])
 
             for archivo in entrada['COD']:
                 las_siglas = []
