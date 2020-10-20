@@ -118,10 +118,13 @@ def get_top_organizations():
                         #print("cambio: ", siglas)
                     if len(siglas) > 0:
                         las_siglas.append(siglas)
+
+                    one_address = {"country": "Cuba", "country_code": "CU", "primary": True}
+
                     data = {
                         "name": entrada['DESC'][count],
                         "acronyms": las_siglas,
-                        "addresses": [],
+                        "addresses": [one_address],
                         "labels": [{
                             "label": entrada['DESC'][count],
                             "iso639": "es",
