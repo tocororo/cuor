@@ -16,7 +16,8 @@ from flask import Blueprint, request, jsonify
 from invenio_previewer.proxies import current_previewer
 
 from cuor.organizations.api import OrganizationRecord
-from cuor.organizations.serializers import json_v1_response
+from cuor.organizations.marshmallow import MetadataSchemaRelIDsV1
+from cuor.organizations.serializers import json_v1_response, json_v1
 
 blueprint = Blueprint(
     'cuor_organizations',
@@ -53,16 +54,15 @@ def select_preview_file(files):
     return selected
 
 
-
-
 api_blueprint = Blueprint(
     'cuor_api_organizations',
     __name__,
     url_prefix='/organizations'
 )
 
+
 @api_blueprint.route('/pid', methods=['GET'])
-def get_source_by_pid():
+def get_org_by_pid():
     """Get a source by any PID received as a argument, including UUID"""
     try:
         _id = request.args.get('value')
@@ -75,6 +75,47 @@ def get_source_by_pid():
 
     except Exception as e:
         return jsonify({
-            'no pid found':_id,
+            'no pid found': _id,
         })
 
+
+organizations_schema_many = MetadataSchemaRelIDsV1(many=True)
+
+
+def sortOrg(org):
+    return org['metadata']['name']
+
+
+@api_blueprint.route('/<uuid>/relationships', methods=['GET'])
+def get_organization_relationships(uuid):
+    """Get a source by any PID received as a argument, including UUID"""
+    try:
+        # TODO: ver como optimizar esto
+        # print("## 1- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+        rtype = request.args.get('type') if request.args.get('type') else None
+        pid, org = OrganizationRecord.get_org_by_pid(uuid)
+        if not pid or not org:
+            raise Exception('no uuid: {0}'.format(uuid))
+        children = []
+        # print("## 2- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+        for rel in org['relationships']:
+            pidvalue = rel['identifiers'][0]['value']
+            rel_type = rel['type']
+            pid, rel_org = OrganizationRecord.get_org_by_pid(pidvalue)
+            if pid and rel_org:
+                if rtype:
+                    if rel_type == rtype:
+
+                        children.append(json_v1.transform_record(pid, rel_org))
+                else:
+                    children.append(json_v1.transform_record(pid, rel_org))
+            # print("## 2- 11 {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+        # print("## 3- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+        # return json_v1_response(pid, org)
+        children.sort(key=sortOrg)
+        return jsonify(children)
+
+    except Exception as e:
+        return jsonify({
+            'ERROR': str(e),
+        })

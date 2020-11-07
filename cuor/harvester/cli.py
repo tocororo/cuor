@@ -13,19 +13,19 @@ def harvester():
 @harvester.command()
 @with_appcontext
 def loadgrid():
-    """Init vocabularies."""
+    """Load GRID data"""
     load_grid()
 
 
 @harvester.command()
 @with_appcontext
 def gettoporg():
-    """Init vocabularies."""
+    """Load ONEI top organizations data."""
     get_top_organizations()
 
 
 @harvester.command()
 @with_appcontext
 def getlowerorg():
-    """Init vocabularies."""
+    """Load ONEI REEUP organization data"""
     get_lower_organizations()
