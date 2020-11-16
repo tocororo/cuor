@@ -19,6 +19,11 @@ from cuor.organizations.api import OrganizationRecord
 from cuor.organizations.marshmallow import MetadataSchemaRelIDsV1
 from cuor.organizations.serializers import json_v1_response, json_v1
 
+from invenio_cache import current_cache
+import datetime
+
+
+
 blueprint = Blueprint(
     'cuor_organizations',
     __name__,
@@ -85,35 +90,42 @@ organizations_schema_many = MetadataSchemaRelIDsV1(many=True)
 def sortOrg(org):
     return org['metadata']['name']
 
+def _get_organization_relationships(uuid, rtype):
+    pid, org = OrganizationRecord.get_org_by_pid(uuid)
+    if not pid or not org:
+        raise Exception('no uuid: {0}'.format(uuid))
+    children = []
+    for rel in org['relationships']:
+        pidvalue = rel['identifiers'][0]['value']
+        rel_type = rel['type']
+        pid, rel_org = OrganizationRecord.get_org_by_pid(pidvalue)
+        if pid and rel_org:
+            if rtype:
+                if rtype == rel_type:
+                    children.append(json_v1.transform_record(pid, rel_org))
+            else:
+                children.append(json_v1.transform_record(pid, rel_org))
+    children.sort(key=sortOrg)
+    return children
+
 
 @api_blueprint.route('/<uuid>/relationships', methods=['GET'])
 def get_organization_relationships(uuid):
     """Get a source by any PID received as a argument, including UUID"""
     try:
-        # TODO: ver como optimizar esto
-        # print("## 1- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
         rtype = request.args.get('type') if request.args.get('type') else None
-        pid, org = OrganizationRecord.get_org_by_pid(uuid)
-        if not pid or not org:
-            raise Exception('no uuid: {0}'.format(uuid))
-        children = []
-        # print("## 2- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-        for rel in org['relationships']:
-            pidvalue = rel['identifiers'][0]['value']
-            rel_type = rel['type']
-            pid, rel_org = OrganizationRecord.get_org_by_pid(pidvalue)
-            if pid and rel_org:
-                if rtype:
-                    if rel_type == rtype:
-
-                        children.append(json_v1.transform_record(pid, rel_org))
-                else:
-                    children.append(json_v1.transform_record(pid, rel_org))
-            # print("## 2- 11 {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-        # print("## 3- {0}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-        # return json_v1_response(pid, org)
-        children.sort(key=sortOrg)
-        return jsonify(children)
+        cache = current_cache.get("get_organization_relationships:{0}{1}".format(uuid, rtype)) or {}
+        if "date" not in cache:
+            cache["date"] = datetime.datetime.now()
+        if datetime.datetime.now() - cache["date"] < datetime.timedelta(days=1) and "stats" in cache:
+            result = cache["stats"]
+            return jsonify(result)
+        else:
+            result = _get_organization_relationships(uuid, rtype)
+            cache["date"] = datetime.datetime.now()
+            cache["stats"] = result
+            current_cache.set("get_organization_relationships:{0}{1}".format(uuid, rtype), cache, timeout=-1)
+            return jsonify(result)
 
     except Exception as e:
         return jsonify({
