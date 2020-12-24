@@ -19,7 +19,6 @@ from __future__ import absolute_import, print_function
 import os
 from datetime import timedelta
 
-from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
 from invenio_indexer.api import RecordIndexer
 from invenio_previewer.config import PREVIEWER_PREFERENCE as BASE_PREFERENCE
 from invenio_records_rest.utils import allow_all, check_elasticsearch
@@ -180,13 +179,13 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Configures Content Security Policy for PDF Previewer
 # Remove it if you are not using PDF Previewer
-APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
-    'default-src': ["'self'", "'unsafe-inline'"],
-    'object-src': ["'none'"],
-    'style-src': ["'self'", "'unsafe-inline'"],
-    'font-src': ["'self'", "data:", "https://fonts.gstatic.com",
-                 "https://fonts.googleapis.com"],
-}
+# APP_DEFAULT_SECURE_HEADERS['content_security_policy'] = {
+#     'default-src': ["'self'", "'unsafe-inline'"],
+#     'object-src': ["'none'"],
+#     'style-src': ["'self'", "'unsafe-inline'"],
+#     'font-src': ["'self'", "data:", "https://fonts.gstatic.com",
+#                  "https://fonts.googleapis.com"],
+# }
 
 WSGI_PROXIES = 2
 
@@ -281,10 +280,10 @@ APP_DEFAULT_SECURE_HEADERS = {
     'strict_transport_security_max_age':            31556926,  # One year in seconds
     'strict_transport_security_include_subdomains': True,
     'content_security_policy':                      {
-        'default-src': ["'self'", "www.google.com", "www.gstatic.com", "'unsafe-inline'"],
+        'default-src': ["'self'", "orgs.sceiba.cu" ,"www.google.com", "www.gstatic.com", "'unsafe-inline'"],
         'object-src':  ["'none'"],
-        'script-src':  ["'self'", "www.google.com", "www.gstatic.com", "'unsafe-inline'", "'unsafe-eval'"],
-        'style-src':   ["'self'", "'unsafe-inline'"],
+        'script-src':  ["'self'", "orgs.sceiba.cu", "www.google.com", "www.gstatic.com", "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src':   ["'self'", "orgs.sceiba.cu", "'unsafe-inline'"],
         'font-src':    ["'self'", "data:"],
         'img-src':     ["'self'", "data:"]
     },
