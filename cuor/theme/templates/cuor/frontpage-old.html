@@ -14,3 +14,34 @@
   </div>
 </div>
 {%- endblock %}
+
+  <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Organizations</title>
+  <base href="https://localhost:5001/">  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    (function (window) {
+      window.__env = window.__env || {};
+      // API url
+      window.__env.sceibaApi = "https://sceiba.cu/api/";
+
+      window.__env.sceibaHost = "https://sceiba.cu/";
+
+      window.__env.cuorApi = "https://orgs.sceiba.cu/api/";
+
+      window.__env.cuorHost = "https://orgs.sceiba.cu/";
+
+      window.__env.oauthRedirectUri = "https://orgs.sceiba.cu/";
+      window.__env.oauthClientId = "ICC1j7NOH0067SgsMyKUXM9ZipavAXHPrbW1ll3V";
+      window.__env.oauthScope = "user:email";
+      window.__env.enableDebug = true;
+    })(this);
+  </script>
+<link rel="stylesheet" href="https://localhost:5001/static/organizations/styles.css"></head>
+<body>
+  <toco-org-root></toco-org-root>
+<script src="https://localhost:5001/static/organizations/runtime.js" type="module"></script><script src="https://localhost:5001/static/organizations/polyfills.js" type="module"></script><script src="https://localhost:5001/static/organizations/main.js" type="module"></script></body>
+</html>

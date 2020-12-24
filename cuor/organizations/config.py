@@ -9,13 +9,7 @@
 
 from __future__ import absolute_import, print_function
 
-from invenio_indexer.api import RecordIndexer
 from invenio_records_rest.facets import terms_filter
-from invenio_records_rest.utils import allow_all, check_elasticsearch
-
-from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
-from cuor.organizations.search import OrganizationSearch
-from cuor.organizations.api import OrganizationRecord
 
 
 def _(x):
@@ -68,19 +62,20 @@ RECORDS_REST_FACETS = dict(
 """Introduce searching facets."""
 
 
+# TODO: see how implement better sort
 RECORDS_REST_SORT_OPTIONS = dict(
-    records=dict(
+    organizations=dict(
+        # mostrecent=dict(
+        #     title=_('Most recent'),
+        #     fields=['-_created'],
+        #     default_order='asc',
+        #     order=1,
+        # ),
         bestmatch=dict(
-            title=_('Best match'),
-            fields=['_score'],
-            default_order='desc',
-            order=1,
-        ),
-        mostrecent=dict(
-            title=_('Most recent'),
-            fields=['-_created'],
-            default_order='asc',
-            order=2,
+                title=_('Best match'),
+                fields=['_score'],
+                default_order='desc',
+                order=1,
         ),
     )
 )
@@ -88,9 +83,9 @@ RECORDS_REST_SORT_OPTIONS = dict(
 
 
 RECORDS_REST_DEFAULT_SORT = dict(
-    records=dict(
+    organizations=dict(
         query='bestmatch',
-        noquery='mostrecent',
+        noquery='bestmatch',
     )
 )
 """Set default sorting options."""

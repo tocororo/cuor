@@ -19,6 +19,7 @@ from marshmallow import fields, missing, validate, post_dump
 
 from cuor.organizations.api import OrganizationRecord
 
+allow_empty = validate.Length(min=0)
 
 def bucket_from_context(_, context):
     """Get the record's bucket from context."""
@@ -73,18 +74,19 @@ class RelationSchemaV1(StrictKeysMixin):
 class RelationSchemaWithIDsV1(StrictKeysMixin):
     """Ids schema."""
 
-    id = fields.UUID(dump_only=True)
+    id = SanitizedUnicode()
     identifiers = Nested(IdentifierSchemaV1, many=True, required=True)
     type = SanitizedUnicode()
     label = SanitizedUnicode()
 
     @post_dump
     def dump_id(self, relationship, **kwargs):
-        pidvalue = relationship['identifiers'][0]['value']
-        # TODO: ver si hay que optimizar esto.
-        pid, org = OrganizationRecord.get_org_by_pid(pidvalue)
-        if pid and org:
-            relationship['id'] = str(pid.pid_value)
+        if 'id' not in relationship:
+            pidvalue = relationship['identifiers'][0]['value']
+            # TODO: ver si hay que optimizar esto.
+            pid, org = OrganizationRecord.get_org_by_pid(pidvalue)
+            if pid and org:
+                relationship['id'] = str(pid.pid_value)
         return relationship
 
 
@@ -100,7 +102,7 @@ class AddressSchemaV1(StrictKeysMixin):
     line_2 = SanitizedUnicode()
     line_3 = SanitizedUnicode()
     postcode = SanitizedUnicode()
-    primary = SanitizedUnicode()
+    primary = fields.Bool()
     state = SanitizedUnicode()
     state_code = SanitizedUnicode()
 
@@ -118,7 +120,7 @@ class MetadataSchemaBaseV1(StrictKeysMixin):
     types = fields.List(SanitizedUnicode(), many=True)
     wikipedia_url = fields.Url()
     email_address = fields.Email()
-    ip_addresses = fields.String()
+    ip_addresses = fields.List(SanitizedUnicode(), many=True)
     established = fields.Integer()
     links = fields.List(fields.Url(), many=True)
     labels = Nested(LabelSchemaV1, many=True)

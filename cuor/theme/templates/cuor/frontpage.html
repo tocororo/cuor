@@ -1,16 +1,33 @@
-{#
-  Copyright (C) 2020 UPR.
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Organizations</title>
+  <base href="https://localhost:5001/">  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    (function (window) {
+      window.__env = window.__env || {};
+      // API url
+      window.__env.sceibaApi = "https://sceiba.cu/api/";
 
-  CuOR is free software; you can redistribute it and/or modify it under the
-  terms of the MIT License; see LICENSE file for more details.
-#}
-{%- extends "invenio_theme/frontpage.html" %}
+      window.__env.sceibaHost = "https://sceiba.cu/";
 
-{%- block page_body %}
-<div class="container marketing">
-  <div class="row">
-    <div class="col-lg-12">
-    <h1 class="text-center">Welcome to CuOR.</h1>
-  </div>
-</div>
-{%- endblock %}
+      window.__env.cuorApi = "https://localhost:5001/api/";
+
+      window.__env.cuorHost = "https://localhost:5001/";
+
+      window.__env.oauthRedirectUri = "https://localhost:5001/";
+      window.__env.oauthClientId = "ICC1j7NOH0067SgsMyKUXM9ZipavAXHPrbW1ll3V";
+      window.__env.oauthScope = "user:email";
+      window.__env.enableDebug = true;
+      {% if user %}
+      window.__env.user = {'id':"{{user.id}}",'email':"{{user.email}}"}
+      {% endif %}
+    })(this);
+  </script>
+<link rel="stylesheet" href="https://localhost:5001/static/organizations/styles.css"></head>
+<body>
+  <toco-org-root></toco-org-root>
+<script src="https://localhost:5001/static/organizations/runtime.js" type="module"></script><script src="https://localhost:5001/static/organizations/polyfills.js" type="module"></script><script src="https://localhost:5001/static/organizations/main.js" type="module"></script></body>
+</html>

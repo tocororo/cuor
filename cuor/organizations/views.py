@@ -9,20 +9,20 @@
 
 from __future__ import absolute_import, print_function
 
+import datetime
+from functools import wraps
 from operator import itemgetter
 from os.path import splitext
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
+from flask_login import current_user
+from invenio_cache import current_cache
 from invenio_previewer.proxies import current_previewer
 
 from cuor.organizations.api import OrganizationRecord
 from cuor.organizations.marshmallow import MetadataSchemaRelIDsV1
+from cuor.organizations.permissions import curator_permission
 from cuor.organizations.serializers import json_v1_response, json_v1
-
-from invenio_cache import current_cache
-import datetime
-
-
 
 blueprint = Blueprint(
     'cuor_organizations',
@@ -36,7 +36,6 @@ The sole purpose of this blueprint is to ensure that Invenio can find the
 templates and static files located in the folders of the same names next to
 this file.
 """
-
 
 #
 # Files related template filters.
@@ -57,6 +56,19 @@ def select_preview_file(files):
     except KeyError:
         pass
     return selected
+
+
+def check_permission(fn):
+    """Check user permissions."""
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        """Decorated view."""
+        if not current_user.is_authenticated:
+            abort(401)
+        if not curator_permission.can():
+            abort(403)
+        return fn(*args, **kwargs)
+    return decorated_view
 
 
 api_blueprint = Blueprint(

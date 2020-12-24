@@ -28,6 +28,11 @@ from cuor.organizations.pidstore import (
 )
 
 
+# TODO: cuando se actualiza una organizacion y se pone status: "redirected"
+#  no aparece la informacion de a cual redirecciona.... incluir esto...
+
+
+
 class OrganizationRecord(Record):
     """Custom record."""
 

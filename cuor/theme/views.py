@@ -14,7 +14,8 @@ this file.
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint
+from flask import Blueprint, render_template, session
+from flask_login import current_user
 
 blueprint = Blueprint(
     'cuor',
@@ -22,3 +23,16 @@ blueprint = Blueprint(
     template_folder='templates',
     static_folder='static',
 )
+
+
+# @blueprint.route('/', methods=['GET'])
+@blueprint.route('/', defaults={'path': ''})
+@blueprint.route('/<path:path>')
+def index(path):
+    print(session)
+    print(path)
+    if current_user.is_authenticated:
+        return render_template('cuor/frontpage.html',
+                           user=current_user)
+    else:
+        return render_template('cuor/frontpage.html')

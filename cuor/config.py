@@ -16,19 +16,19 @@ You overwrite and set instance-specific configuration by either:
 
 from __future__ import absolute_import, print_function
 
+import os
 from datetime import timedelta
 
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
-from invenio_previewer.config import PREVIEWER_PREFERENCE as BASE_PREFERENCE
-from cuor.configvariables import *
-import os
-
-from cuor.organizations.pidstore import ORGANIZATION_TYPE, ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
-from cuor.organizations.search import OrganizationSearch
-from cuor.organizations.api import OrganizationRecord
 from invenio_indexer.api import RecordIndexer
-from invenio_records_rest.facets import terms_filter
+from invenio_previewer.config import PREVIEWER_PREFERENCE as BASE_PREFERENCE
 from invenio_records_rest.utils import allow_all, check_elasticsearch
+
+from cuor.configvariables import *
+from cuor.organizations.api import OrganizationRecord
+from cuor.organizations.permissions import can_edit_organization_factory
+from cuor.organizations.pidstore import ORGANIZATION_PID_TYPE, ORGANIZATION_PID_MINTER, ORGANIZATION_PID_FETCHER
+from cuor.organizations.search import OrganizationSearch
 
 
 def _(x):
@@ -68,11 +68,11 @@ SETTINGS_TEMPLATE = 'invenio_theme/page_settings.html'
 # Theme configuration
 # ===================
 #: Site name
-THEME_SITENAME = _('Cuban Organizations Registry')
+THEME_SITENAME = _('Catálogo de Organizaciones Cubanas')
 #: Use default frontpage.
-THEME_FRONTPAGE = True
+THEME_FRONTPAGE = False
 #: Frontpage title.
-THEME_FRONTPAGE_TITLE = _('Cuban Organizations Registry')
+THEME_FRONTPAGE_TITLE = _('Catálogo de Organizaciones Cubanas')
 #: Frontpage template.
 THEME_FRONTPAGE_TEMPLATE = 'cuor/frontpage.html'
 
@@ -222,10 +222,10 @@ RECORDS_REST_ENDPOINTS = {
         default_media_type='application/json',
         max_result_window=10000,
         error_handlers=dict(),
-        create_permission_factory_imp=allow_all,
+        create_permission_factory_imp=can_edit_organization_factory,
         read_permission_factory_imp=check_elasticsearch,
-        update_permission_factory_imp=allow_all,
-        delete_permission_factory_imp=allow_all,
+        update_permission_factory_imp=can_edit_organization_factory,
+        delete_permission_factory_imp=can_edit_organization_factory,
         list_permission_factory_imp=allow_all,
         links_factory_imp='invenio_records_files.'
                           'links:default_record_files_links_factory',
@@ -258,6 +258,7 @@ RECORDS_UI_ENDPOINTS = dict(
 )
 """Records UI for cuor."""
 
+
 SEARCH_UI_SEARCH_API = '/api/organizations/'
 SEARCH_UI_SEARCH_INDEX = 'organizations'
 INDEXER_DEFAULT_DOC_TYPE = 'organization-v1.0.0'
@@ -267,3 +268,28 @@ OAISERVER_RECORD_INDEX = 'organizations'
 SEARCH_UI_JSTEMPLATE_RESULTS = 'templates/organizations/results.html'
 """Result list template."""
 
+
+
+APP_DEFAULT_SECURE_HEADERS = {
+    'force_https':                                  True,
+    'force_https_permanent':                        False,
+    'force_file_save':                              False,
+    'frame_options':                                'sameorigin',
+    'frame_options_allow_from':                     None,
+    'strict_transport_security':                    True,
+    'strict_transport_security_preload':            False,
+    'strict_transport_security_max_age':            31556926,  # One year in seconds
+    'strict_transport_security_include_subdomains': True,
+    'content_security_policy':                      {
+        'default-src': ["'self'", "www.google.com", "www.gstatic.com", "'unsafe-inline'"],
+        'object-src':  ["'none'"],
+        'script-src':  ["'self'", "www.google.com", "www.gstatic.com", "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src':   ["'self'", "'unsafe-inline'"],
+        'font-src':    ["'self'", "data:"],
+        'img-src':     ["'self'", "data:"]
+    },
+    'content_security_policy_report_uri':           None,
+    'content_security_policy_report_only':          False,
+    'session_cookie_secure':                        True,
+    'session_cookie_http_only':                     True
+}

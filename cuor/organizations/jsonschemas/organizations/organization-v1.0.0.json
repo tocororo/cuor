@@ -7,7 +7,8 @@
   "required": [
     "identifiers",
     "id",
-    "name"
+    "name",
+    "addresses"
   ],
   "properties": {
     "id": {
@@ -179,6 +180,10 @@
           "label": {
             "type": "string",
             "description": "The name of the related institute"
+          },
+          "id": {
+            "type": "string",
+            "description": "Iroko Organization UUID"
           }
         }
       }
@@ -186,7 +191,7 @@
     "addresses": {
       "type": "array",
       "description": "An array of addresses associated with the institute",
-      "minItems": 0,
+      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": true,
