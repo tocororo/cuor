@@ -15,17 +15,17 @@ export FLASK_ENV=development
 # Start Worker and Server
 #pipenv run celery worker -A invenio_app.celery -l INFO & pid_celery=$!
 
-#pipenv run invenio run \
-#       --port 5001 \
-#       --cert "$script_path"/../docker/nginx/test.crt \
-#       --key "$script_path"/../docker/nginx/test.key \
-#       --host "10.2.83.160" & pid_server=$!
-
 pipenv run invenio run \
        --port 5001 \
        --cert "$script_path"/../docker/nginx/test.crt \
        --key "$script_path"/../docker/nginx/test.key \
-       & pid_server=$!
+       --host "192.168.1.100" & pid_server=$!
+
+#pipenv run invenio run \
+#       --port 5001 \
+#       --cert "$script_path"/../docker/nginx/test.crt \
+#       --key "$script_path"/../docker/nginx/test.key \
+#       & pid_server=$!
 
 trap 'kill $pid_celery $pid_server &>/dev/null' EXIT
 

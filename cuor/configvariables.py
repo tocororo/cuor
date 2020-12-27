@@ -21,7 +21,7 @@ IP_REDIS = 'crai-sceiba-redis.upr.edu.cu'
 #: provided, the allowed hosts variable is set to localhost. In production it
 #: should be set to the correct host and it is strongly recommended to only
 #: route correct hosts to the application.
-APP_ALLOWED_HOSTS = ['cuor.cu', 'localhost', '127.0.0.1', '10.2.83.160']
+APP_ALLOWED_HOSTS = ['cuor.cu', 'localhost', '127.0.0.1', '10.2.83.160','192.168.1.100']
 
-
+INTERNAL_CLIENT_APPS_SECRETS = ["Vpb7TPrQcM9FVyjxGnuuwtdlNY869DQV5KVfiTNmgT4embZK6zFTI9fz8xQS"]
 CUOR_DATA_DIRECTORY = 'data'
