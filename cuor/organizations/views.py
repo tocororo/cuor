@@ -43,7 +43,7 @@ this file.
 #
 # Views
 #
-@blueprint.route('/cuor/authorize', methods=['GET', 'POST'])
+@blueprint.route('/oauth/cuor/authorize', methods=['GET', 'POST'])
 # @register_breadcrumb(blueprint, '.', _('Authorize application'))
 @login_required
 @oauth_error_handler
