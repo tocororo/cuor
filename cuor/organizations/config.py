@@ -64,18 +64,18 @@ RECORDS_REST_FACETS = dict(
 
 # TODO: see how implement better sort
 RECORDS_REST_SORT_OPTIONS = dict(
-    organizations=dict(
-        # mostrecent=dict(
-        #     title=_('Most recent'),
-        #     fields=['-_created'],
-        #     default_order='asc',
-        #     order=1,
-        # ),
+    records=dict(
         bestmatch=dict(
-                title=_('Best match'),
-                fields=['_score'],
-                default_order='desc',
-                order=1,
+            title=_('Best match'),
+            fields=['_score'],
+            default_order='desc',
+            order=1,
+        ),
+        mostrecent=dict(
+            title=_('Most recent'),
+            fields=['-_created'],
+            default_order='asc',
+            order=2,
         ),
     )
 )
@@ -83,9 +83,9 @@ RECORDS_REST_SORT_OPTIONS = dict(
 
 
 RECORDS_REST_DEFAULT_SORT = dict(
-    organizations=dict(
+    records=dict(
         query='bestmatch',
-        noquery='bestmatch',
+        noquery='mostrecent',
     )
 )
 """Set default sorting options."""
