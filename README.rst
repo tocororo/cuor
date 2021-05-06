@@ -23,3 +23,10 @@ Further documentation is available on
 https://cuor.readthedocs.io/
 
 In order to import ONEI data from excell files you need add pandas and xlrd extension to virtual enviroment
+
+
+======
+Project development
+======
+
+This project is using Github Flow. Go to https://guides.github.com/introduction/flow/ to see how it work.
