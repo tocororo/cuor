@@ -171,7 +171,7 @@ pytest-mock==3.1.1
 pytest-pep8==1.0.6
 pytest-random-order==1.0.4
 pytest-runner==4.5.1
-python-apt==1.6.5+ubuntu0.5
+python-apt==1.6.5
 python-dateutil==2.8.1
 python-editor==1.0.4
 pytz==2020.1
