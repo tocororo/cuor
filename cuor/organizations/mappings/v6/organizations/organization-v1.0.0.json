@@ -40,6 +40,9 @@
         "established": {
           "type": "keyword"
         },
+        "onei_registry": {
+          "type": "keyword"
+        },
         "labels": {
           "type": "object",
           "properties": {
@@ -67,6 +70,12 @@
               "type": "keyword"
             },
             "state_code": {
+              "type": "keyword"
+            },
+            "municipality": {
+              "type": "keyword"
+            },
+            "municipality_dpa": {
               "type": "keyword"
             }
           }

@@ -105,6 +105,8 @@ class AddressSchemaV1(StrictKeysMixin):
     primary = fields.Bool()
     state = SanitizedUnicode()
     state_code = SanitizedUnicode()
+    municipality = SanitizedUnicode()
+    municipality_dpa = SanitizedUnicode()
 
 
 
@@ -122,6 +124,8 @@ class MetadataSchemaBaseV1(StrictKeysMixin):
     email_address = fields.Email()
     ip_addresses = fields.List(SanitizedUnicode(), many=True)
     established = fields.Integer()
+    onei_registry = fields.Integer()
+    exportable = fields.Bool()
     links = fields.List(fields.Url(), many=True)
     labels = Nested(LabelSchemaV1, many=True)
     relationships = Nested(RelationSchemaV1, many=True)

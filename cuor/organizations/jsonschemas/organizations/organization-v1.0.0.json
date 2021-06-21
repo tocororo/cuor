@@ -105,7 +105,15 @@
     },
     "established": {
       "type": "integer",
-      "description": "he year the institute opened, CE"
+      "description": "The year the organization opened, CE"
+    },
+    "onei_registry": {
+      "type": "integer",
+      "description": "he year the organization was include in ONEI registry, oh its terms: Alta"
+    },
+    "exportable": {
+      "type": "boolean",
+      "description": "If true means it's ready for be exported for other systems"
     },
     "links": {
       "type": "array",
@@ -243,6 +251,14 @@
           "state_code": {
             "type": "string",
             "description": "The ISO 3166-2 region code"
+          },
+          "municipality": {
+            "type": "string",
+            "description": "The name of the municipality"
+          },
+          "municipality_dpa": {
+            "type": "string",
+            "description": "The DPA minicipality code"
           },
           "geonames_city": {
             "type": "object",
