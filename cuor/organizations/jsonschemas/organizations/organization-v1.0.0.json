@@ -109,7 +109,7 @@
     },
     "onei_registry": {
       "type": "integer",
-      "description": "he year the organization was include in ONEI registry, oh its terms: Alta"
+      "description": "The year the organization was include in ONEI registry"
     },
     "exportable": {
       "type": "boolean",

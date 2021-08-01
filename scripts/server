@@ -19,7 +19,7 @@ pipenv run invenio run \
        --port 5001 \
        --cert "$script_path"/../docker/nginx/test.crt \
        --key "$script_path"/../docker/nginx/test.key \
-       --host "192.168.1.100" & pid_server=$!
+       & pid_server=$!
 
 #pipenv run invenio run \
 #       --port 5001 \
