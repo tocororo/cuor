@@ -1,11 +1,11 @@
-from Class.subclass import Subclass
-from Database.cursorPool import CursorPool
-from logger_base import logger
+from cuor.harvester.wikidata.Class.subclass import Subclass
+from cuor.harvester.wikidata.Database.cursorPool import CursorPool
+from cuor.harvester.wikidata.logger_base import logger
 
 
 class Subclass:
     '''
-    DAO (Data Access Object) 
+    DAO (Data Access Object)
     CRUD: Create-Read-Update-Delete entidad subClass
     '''
     __SELECT = 'SELECT * FROM "subClass" ;'

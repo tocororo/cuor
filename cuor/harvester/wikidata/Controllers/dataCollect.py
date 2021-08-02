@@ -2,10 +2,10 @@ import time
 from enum import Enum
 from random import randint
 
-from Controllers.instance import Instance
-from Controllers.subclass import Subclass
-from Database.SPARQL import getSparqlSubclass, getSparqlInstance, getInstanceStatements, getInstanceDescription
-from logger_base import logger
+from cuor.harvester.wikidata.Controllers.instance import Instance
+from cuor.harvester.wikidata.Controllers.subclass import Subclass
+from cuor.harvester.wikidata.Database.SPARQL import getSparqlSubclass, getSparqlInstance, getInstanceStatements, getInstanceDescription
+from cuor.harvester.wikidata.logger_base import logger
 
 
 class States(Enum):

@@ -1,5 +1,5 @@
-from Database.connection import Connection
-from logger_base import logger
+from connection import Connection
+from cuor.harvester.wikidata.logger_base import logger
 
 
 class CursorPool:
@@ -36,4 +36,4 @@ if __name__ == '__main__':
     with CursorPool() as cursor:
         cursor.execute('SELECT * FROM "subClass"')
         logger.debug('Listado de personas')
-        logger.debug(cursor.fetchall())              
+        logger.debug(cursor.fetchall())

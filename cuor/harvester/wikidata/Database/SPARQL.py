@@ -4,7 +4,7 @@
 import sys
 
 from SPARQLWrapper import SPARQLWrapper, JSON
-from logger_base import logger
+from cuor.harvester.wikidata.logger_base import logger
 
 endpoint_url = "https://query.wikidata.org/sparql"
 
@@ -14,13 +14,13 @@ def getSparqlInstance(QID):
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription
                    ?country  ?countryLabel
-            
+
                     WHERE {
                      ?item (wdt:P31)+ wd:""" f"{QID};" """
                                       rdfs:label ?itemLabel.
                         FILTER(lang(?itemLabel) = 'en')
-                     
-                        OPTIONAL { ?item  wdt:P17  ?country }      
+
+                        OPTIONAL { ?item  wdt:P17  ?country }
                         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
                      }
                      ORDER BY ?item"""
@@ -40,7 +40,7 @@ def getSparqlSubclass(QID):
     try:
         # Q43229 - organization
         query = """SELECT ?item ?itemLabel
-                    WHERE { 
+                    WHERE {
                           ?item (wdt:P279)* wd:""" f"{QID};" """
                                  rdfs:label ?itemLabel.
                           FILTER(lang(?itemLabel) = 'en')
@@ -65,7 +65,7 @@ def getInstanceStatements(itemLabel):
                     ?item rdfs:label """  f'"{itemLabel}"' " """"@en.
                     ?item ?_prop ?_prop_entity.
 
-                    SERVICE wikibase:label { bd:serviceParam wikibase:language "es". } 
+                    SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
                     ?prop wikibase:directClaim ?_prop .
                 }"""
     user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
@@ -80,7 +80,7 @@ def getInstanceDescription(itemLabel):
     try:
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription ?itemAltLabel
-            
+
                     WHERE {
                      ?item rdfs:label """  f'"{itemLabel}"' " """"@en.
                      OPTIONAL { ?item skos:altLabel ?alternative . }

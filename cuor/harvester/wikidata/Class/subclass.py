@@ -1,4 +1,4 @@
-from logger_base import logger
+from cuor.harvester.wikidata.logger_base import logger
 
 
 class Subclass:

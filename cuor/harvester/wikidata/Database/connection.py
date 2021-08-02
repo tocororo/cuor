@@ -1,4 +1,4 @@
-from logger_base import logger
+from cuor.harvester.wikidata.logger_base import logger
 from psycopg2 import pool
 import sys
 
@@ -66,5 +66,5 @@ if __name__ == '__main__':
     Connection.releaseConnection(conexion2)
     # Cerramos el pool
     Connection.closeConnections()
-    # Si intentamos pedir una connection de un pool cerrado manda error 
+    # Si intentamos pedir una connection de un pool cerrado manda error
     # conexion3 = Connection.obtenerConexion()

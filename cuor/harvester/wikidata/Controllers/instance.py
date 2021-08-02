@@ -1,14 +1,14 @@
 import json
 
-from Class.instance import Instance
-from Database.connection import DB_USERNAME
-from Database.cursorPool import CursorPool
-from logger_base import logger
+from cuor.harvester.wikidata.Class.instance import Instance
+from cuor.harvester.wikidata.Database.connection import DB_USERNAME
+from cuor.harvester.wikidata.Database.cursorPool import CursorPool
+from cuor.harvester.wikidata.logger_base import logger
 
 
 class Instance:
     '''
-    DAO (Data Access Object) 
+    DAO (Data Access Object)
     CRUD: Create-Read-Update-Delete entidad instance
     '''
     __CREATE_INSTANCE = """CREATE TABLE public."instanceOf"(
@@ -24,12 +24,12 @@ class Instance:
                             "state" character varying COLLATE pg_catalog."default NOT NULL,
                             CONSTRAINT "instanceOf_pkey" PRIMARY KEY (qid)
                         )
-                        
-                        TABLESPACE pg_default;                        
-                        
+
+                        TABLESPACE pg_default;
+
                         ALTER TABLE public."instanceOf"
                             OWNER to """ f'{DB_USERNAME}'""";
-                        
+
                         CREATE OR REPLACE FUNCTION public."before_insert_instanceofFUN"()
                             RETURNS trigger
                             LANGUAGE 'plpgsql'
@@ -37,14 +37,14 @@ class Instance:
                             COST 100
                         AS $BODY$
                         BEGIN
-                             if EXISTS (select qid FROM "instanceOf" WHERE qid = new.qid ) then 
+                             if EXISTS (select qid FROM "instanceOf" WHERE qid = new.qid ) then
                                 RETURN NULL;
                              else
                                 RETURN NEW;
                             end if;
                         END;
                         $BODY$;
-                        
+
                         CREATE TRIGGER before_insert_instanceof
                             BEFORE INSERT
                             ON public."instanceOf"
@@ -57,12 +57,12 @@ class Instance:
                             label character varying(255) COLLATE pg_catalog."default",
                             CONSTRAINT "subClass_pkey" PRIMARY KEY (qid)
                         )
-                        
+
                         TABLESPACE pg_default;
-                        
+
                         ALTER TABLE public."subClass"
                             OWNER to """ f'{DB_USERNAME}'""";
-                        
+
                         CREATE OR REPLACE FUNCTION public."before_insert_subclassFUN"()
                             RETURNS trigger
                             LANGUAGE 'plpgsql'
@@ -70,14 +70,14 @@ class Instance:
                             COST 100
                         AS $BODY$
                         BEGIN
-                             if EXISTS (select qid FROM public."subClass" WHERE qid = new.qid ) then 
+                             if EXISTS (select qid FROM public."subClass" WHERE qid = new.qid ) then
                                 RETURN NULL;
                              else
                                 RETURN NEW;
                             end if;
                         END;
                         $BODY$;
-                        
+
                         CREATE TRIGGER before_insert_subclass
                             BEFORE INSERT
                             ON public."subClass"
