@@ -4,12 +4,12 @@
 import sys
 
 from SPARQLWrapper import SPARQLWrapper, JSON
-from cuor.harvester.wikidata.logger_base import logger
+from logger_base import logger
 
 endpoint_url = "https://query.wikidata.org/sparql"
 
 
-def getSparqlEntities(QID):
+def getSparqlInstance(QID):
     try:
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription
@@ -36,7 +36,7 @@ def getSparqlEntities(QID):
         return None
 
 
-def getSparqlOrganizations(QID):
+def getSparqlSubclass(QID):
     try:
         # Q43229 - organization
         query = """SELECT ?item ?itemLabel
@@ -58,7 +58,7 @@ def getSparqlOrganizations(QID):
         return None
 
 
-def getEntitiesStatements(itemLabel):
+def getInstanceStatements(itemLabel):
     query = """SELECT ?_prop ?propLabel ?_prop_entity ?_prop_entityLabel
                 WHERE
                 {
@@ -76,7 +76,7 @@ def getEntitiesStatements(itemLabel):
     return sparql.query().convert()
 
 
-def getEntitiesDescription(itemLabel):
+def getInstanceDescription(itemLabel):
     try:
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription ?itemAltLabel
@@ -99,16 +99,16 @@ def getEntitiesDescription(itemLabel):
 
 
 if __name__ == '__main__':
-    resultsOrganizations = getEntitiesStatements('Q43229')
-    for result in resultsOrganizations["results"]["bindings"]:
+    resultsSubclass = getInstanceStatements('Q43229')
+    for result in resultsSubclass["results"]["bindings"]:
         print(result)
 
-# resultsOrganizations = getSparqlOrganizations('Q43229')
-# for result in resultsOrganizations["results"]["bindings"]:
-#     # subClass = Organizations(result.item.value)
+# resultsSubclass = getSparqlSubclass('Q43229')
+# for result in resultsSubclass["results"]["bindings"]:
+#     # subClass = Subclass(result.item.value)
 #     print(result)
 
-# resultsEntities = getSparqlEntities('Q43229')
-# for result in resultsEntities["results"]["bindings"]:
-#     # subClass = Organizations(result.item.value)
+# resultsInstance = getSparqlInstance('Q43229')
+# for result in resultsInstance["results"]["bindings"]:
+#     # subClass = Subclass(result.item.value)
 #     print(result)

@@ -1,9 +1,10 @@
 from cuor.harvester.wikidata.Controllers.dataCollect import collect, getDataInstance
-from cuor.harvester.wikidata.Controllers.entities import Entities
+from cuor.harvester.wikidata.Controllers.instance import Instance
+
 
 def startCollect(org: str):
-    Entities.createTableEntities()
-    Entities.createTableOrganizations()
-    collect(org)
-    getDataInstance('original')
+    await Instance.createTableInstance()
+    await Instance.createTableSubclass()
+    await collect(org)
+    await getDataInstance('original')
     return org

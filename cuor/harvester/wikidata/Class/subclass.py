@@ -1,7 +1,7 @@
 from logger_base import logger
 
 
-class Organizations:
+class Subclass:
     def __init__(self, QID=None, label=None):
         self.__QID = QID
         self.__label = label
@@ -26,5 +26,5 @@ class Organizations:
 
 
 if __name__ == '__main__':
-    subclass = Organizations(QID='Q4564', label='Gomez')
+    subclass = Subclass(QID='Q4564', label='Gomez')
     logger.debug(subclass)

@@ -1,19 +1,17 @@
-from flask import current_app
-
-from cuor.harvester.wikidata.logger_base import logger
+from logger_base import logger
 from psycopg2 import pool
 import sys
 
-DB_USERNAME = 'cuor'
-DB_PASSWORD = 'cuor'
+DB_USERNAME = 'wdorgs'
+DB_PASSWORD = 'wdorgs'
 #__HOST = 'postgres.sceiba.cu'
 
 class Connection:
-    __DATABASE = 'cuor'
-    __USERNAME = 'cuor'
-    __PASSWORD = 'cuor'
+    __DATABASE = 'wdorgs'
+    __USERNAME = 'wdorgs'
+    __PASSWORD = 'wdorgs'
     __DB_PORT = '5432'
-    __HOST = current_app.config['IP_POSGRE']
+    __HOST = 'localhost'
     __MIN_CON = 1
     __MAX_CON = 5
     __pool = None

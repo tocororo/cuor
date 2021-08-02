@@ -1,9 +1,9 @@
-from cuor.harvester.wikidata.Class.organizations import Organizations
-from cuor.harvester.wikidata.Database.cursorPool import CursorPool
-from cuor.harvester.wikidata.logger_base import logger
+from Class.subclass import Subclass
+from Database.cursorPool import CursorPool
+from logger_base import logger
 
 
-class Organizations:
+class Subclass:
     '''
     DAO (Data Access Object) 
     CRUD: Create-Read-Update-Delete entidad subClass
@@ -19,7 +19,7 @@ class Organizations:
             results = cursor.fetchall()
             subClasses = []
             for result in results:
-                subClass = Organizations(result[0], result[1])
+                subClass = Subclass(result[0], result[1])
                 subClasses.append(subClass)
             return subClasses
 
@@ -34,13 +34,13 @@ class Organizations:
 
 
 if __name__ == '__main__':
-    subClasses = Organizations.select()
+    subClasses = Subclass.select()
     print(subClasses)
     for subClass in subClasses:
         logger.debug(subClass)
         logger.debug(subClass.getQID())
 
     # Insertamos un nuevo registro
-    # subClass = Organizations(QID='Q525', label='Najera', id_subClass='Q566')
-    # inserted_instances = Entities.insert(subClass)
+    # subClass = Subclass(QID='Q525', label='Najera', id_subClass='Q566')
+    # inserted_instances = Instance.insert(subClass)
     # logger.debug(f'Inserted persons: {inserted_instances}')

@@ -1,5 +1,5 @@
 from Database.connection import Connection
-from cuor.harvester.wikidata.logger_base import logger
+from logger_base import logger
 
 
 class CursorPool:
