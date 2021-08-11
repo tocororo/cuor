@@ -6,7 +6,7 @@ logger.basicConfig(level=logging.DEBUG,
                    format='%(asctime)s: %(levelname)s [%(filename)s:%(lineno)s] %(message)s',
                    datefmt='%I:%M:%S %p',
                    handlers=[
-                       logging.FileHandler('wikidata.log'),
+                       logging.FileHandler('/var/log/wikidata.log'),
                        logging.StreamHandler()
                    ])
 
