@@ -223,3 +223,5 @@ WTForms-Alchemy==0.17.0
 WTForms-Components==0.10.4
 xlrd==1.2.0
 zipp==3.1.0
+SPARQLWrapper~=1.8.5
+setuptools~=51.0.0
