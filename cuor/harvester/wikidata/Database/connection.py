@@ -1,17 +1,15 @@
-from flask import current_app
-
 from cuor.harvester.wikidata.logger_base import logger
 from psycopg2 import pool
 import sys
 
-DB_USERNAME = 'cuor'
-DB_PASSWORD = 'cuor'
+DB_USERNAME = 'wdorgs'
+DB_PASSWORD = 'wdorgs'
 #__HOST = 'postgres.sceiba.cu'
 
 class Connection:
-    __DATABASE = 'cuor'
-    __USERNAME = 'cuor'
-    __PASSWORD = 'cuor'
+    __DATABASE = 'wdorgs'
+    __USERNAME = 'wdorgs'
+    __PASSWORD = 'wdorgs'
     __DB_PORT = '5432'
     __HOST = '10.143.231.120' #TODO: arreglar, poner la direccion de postgres segun la config
     __MIN_CON = 1
@@ -68,5 +66,5 @@ if __name__ == '__main__':
     Connection.releaseConnection(conexion2)
     # Cerramos el pool
     Connection.closeConnections()
-    # Si intentamos pedir una connection de un pool cerrado manda error 
+    # Si intentamos pedir una connection de un pool cerrado manda error
     # conexion3 = Connection.obtenerConexion()

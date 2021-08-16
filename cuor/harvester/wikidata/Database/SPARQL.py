@@ -9,18 +9,18 @@ from cuor.harvester.wikidata.logger_base import logger
 endpoint_url = "https://query.wikidata.org/sparql"
 
 
-def getSparqlEntities(QID):
+def getSparqlInstance(QID):
     try:
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription
                    ?country  ?countryLabel
-            
+
                     WHERE {
                      ?item (wdt:P31)+ wd:""" f"{QID};" """
                                       rdfs:label ?itemLabel.
                         FILTER(lang(?itemLabel) = 'en')
-                     
-                        OPTIONAL { ?item  wdt:P17  ?country }      
+
+                        OPTIONAL { ?item  wdt:P17  ?country }
                         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
                      }
                      ORDER BY ?item"""
@@ -36,11 +36,11 @@ def getSparqlEntities(QID):
         return None
 
 
-def getSparqlOrganizations(QID):
+def getSparqlSubclass(QID):
     try:
         # Q43229 - organization
         query = """SELECT ?item ?itemLabel
-                    WHERE { 
+                    WHERE {
                           ?item (wdt:P279)* wd:""" f"{QID};" """
                                  rdfs:label ?itemLabel.
                           FILTER(lang(?itemLabel) = 'en')
@@ -58,14 +58,14 @@ def getSparqlOrganizations(QID):
         return None
 
 
-def getEntitiesStatements(itemLabel):
+def getInstanceStatements(itemLabel):
     query = """SELECT ?_prop ?propLabel ?_prop_entity ?_prop_entityLabel
                 WHERE
                 {
                     ?item rdfs:label """  f'"{itemLabel}"' " """"@en.
                     ?item ?_prop ?_prop_entity.
 
-                    SERVICE wikibase:label { bd:serviceParam wikibase:language "es". } 
+                    SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
                     ?prop wikibase:directClaim ?_prop .
                 }"""
     user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
@@ -76,11 +76,11 @@ def getEntitiesStatements(itemLabel):
     return sparql.query().convert()
 
 
-def getEntitiesDescription(itemLabel):
+def getInstanceDescription(itemLabel):
     try:
         # Q43229 - organization
         query = """SELECT DISTINCT ?item  ?itemLabel ?itemDescription ?itemAltLabel
-            
+
                     WHERE {
                      ?item rdfs:label """  f'"{itemLabel}"' " """"@en.
                      OPTIONAL { ?item skos:altLabel ?alternative . }
@@ -99,16 +99,16 @@ def getEntitiesDescription(itemLabel):
 
 
 if __name__ == '__main__':
-    resultsOrganizations = getEntitiesStatements('Q43229')
-    for result in resultsOrganizations["results"]["bindings"]:
+    resultsSubclass = getInstanceStatements('Q43229')
+    for result in resultsSubclass["results"]["bindings"]:
         print(result)
 
-# resultsOrganizations = getSparqlOrganizations('Q43229')
-# for result in resultsOrganizations["results"]["bindings"]:
-#     # subClass = Organizations(result.item.value)
+# resultsSubclass = getSparqlSubclass('Q43229')
+# for result in resultsSubclass["results"]["bindings"]:
+#     # subClass = Subclass(result.item.value)
 #     print(result)
 
-# resultsEntities = getSparqlEntities('Q43229')
-# for result in resultsEntities["results"]["bindings"]:
-#     # subClass = Organizations(result.item.value)
+# resultsInstance = getSparqlInstance('Q43229')
+# for result in resultsInstance["results"]["bindings"]:
+#     # subClass = Subclass(result.item.value)
 #     print(result)

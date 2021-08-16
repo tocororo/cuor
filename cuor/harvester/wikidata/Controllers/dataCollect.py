@@ -1,12 +1,25 @@
 import time
+from enum import Enum
 from random import randint
 
-from cuor.harvester.wikidata.Class.entities import Entities
-from cuor.harvester.wikidata.Class.organizations import Organizations
-from cuor.harvester.wikidata.Controllers.entities import Entities
-from cuor.harvester.wikidata.Controllers.organizations import Organizations
-from cuor.harvester.wikidata.Database.SPARQL import getSparqlOrganizations, getSparqlEntities, getEntitiesStatements, getEntitiesDescription
+from cuor.harvester.wikidata.Controllers.instance import Instance
+from cuor.harvester.wikidata.Controllers.subclass import Subclass
+from cuor.harvester.wikidata.Database.SPARQL import getSparqlSubclass, getSparqlInstance, getInstanceStatements, getInstanceDescription
 from cuor.harvester.wikidata.logger_base import logger
+
+
+class States(Enum):
+    existente = 'Existente'
+    noExistente = 'NoExistente'
+    conSemejantes = 'ConSemejantes'
+    sinSemejantes = 'SinSemejantes'
+    desambiguada = 'Desambiguada'
+    noDesambiguada = 'NoDesambiguada'
+    coincidencias = 'Coincidencias'
+    noCoincidencias = 'NoCoincidencias'
+    combinada = 'Combinada'
+    conflictoAlCombinar = 'ConflictoAlCombinar'
+    noCombinada = 'NoCombinada'
 
 
 # Q43229
@@ -14,53 +27,53 @@ def collect(QID):
     sleep_time = randint(3, 9)
     print('sleep {0} seconds'.format(sleep_time))
     time.sleep(sleep_time)
-    sparqlEntities = getSparqlEntities(QID)
+    sparqlInstance = getSparqlInstance(QID)
 
-    # print(sparqlEntities)
-    if sparqlEntities and len(sparqlEntities["results"]["bindings"]) > 0:
-        for sparqlI in sparqlEntities["results"]["bindings"]:
+    # print(sparqlInstance)
+    if sparqlInstance and len(sparqlInstance["results"]["bindings"]) > 0:
+        for sparqlI in sparqlInstance["results"]["bindings"]:
             if "countryLabel" in sparqlI and sparqlI["countryLabel"]["value"] == "Cuba":
                 instanceCollect(sparqlI)
 
-    postgresOrganizations = Organizations.select()
+    postgresSubclass = Subclass.select()
 
     sleep_time = randint(3, 9)
     print('sleep {0} seconds'.format(sleep_time))
     time.sleep(sleep_time)
-    sparqlOrganizations = getSparqlOrganizations(QID)
+    sparqlSubclass = getSparqlSubclass(QID)
 
-    if sparqlOrganizations and len(sparqlOrganizations["results"]["bindings"]) > 0:
-        for sparqlS in sparqlOrganizations["results"]["bindings"]:
+    if sparqlSubclass and len(sparqlSubclass["results"]["bindings"]) > 0:
+        for sparqlS in sparqlSubclass["results"]["bindings"]:
             _QID = sparqlS["item"]["value"].split('/')
-            if not any(_QID[len(_QID) - 1] == postgres.getQID() for postgres in postgresOrganizations):
-                subclass = Organizations(_QID[len(_QID) - 1], sparqlS["itemLabel"]["value"])
-                subclass_inserted = Organizations.insert(subclass)
+            if not any(_QID[len(_QID) - 1] == postgres.getQID() for postgres in postgresSubclass):
+                subclass = Subclass(_QID[len(_QID) - 1], sparqlS["itemLabel"]["value"])
+                subclass_inserted = Subclass.insert(subclass)
                 logger.debug(f'Subclass inserted: {subclass_inserted}')
                 collect(_QID[len(_QID) - 1])
             else:
-                logger.info(f'Organizations exist: {sparqlS["itemLabel"]["value"]}')
+                logger.info(f'Subclass exist: {sparqlS["itemLabel"]["value"]}')
 
 
 def instanceCollect(sparql):
-    postgresEntities = Entities.select()
+    postgresInstance = Instance.select()
     _QID = sparql["item"]["value"].split('/')
-    if not any(_QID[len(_QID) - 1] == postgres.getQID() for postgres in postgresEntities):
-        instance = Entities(_QID[len(_QID) - 1], sparql["itemLabel"]["value"])
-        instance_inserted = Entities.insert(instance)
+    if not any(_QID[len(_QID) - 1] == postgres.getQID() for postgres in postgresInstance):
+        instance = Instance(_QID[len(_QID) - 1], sparql["itemLabel"]["value"])
+        instance_inserted = Instance.insert(instance)
         logger.debug(f'Subclass inserted: {instance_inserted}')
     else:
-        logger.info(f'Entities exist: {sparql["itemLabel"]["value"]}')
+        logger.info(f'Instance exist: {sparql["itemLabel"]["value"]}')
 
 
 def getDataInstance(updateType):
-    postgresEntities = Entities.select()
-    for postgres in postgresEntities:
+    postgresInstance = Instance.select()
+    for postgres in postgresInstance:
         if postgres.getItemLabel() != 'null' and postgres.getItemLabel() != 'None' and postgres.getItemLabel() != '':
             sleep_time = randint(3, 9)
             print('sleep {0} seconds'.format(sleep_time))
             time.sleep(sleep_time)
-            infoInstances = getEntitiesStatements(postgres.getItemLabel())
-            desc_alias = getEntitiesDescription(postgres.getItemLabel())
+            infoInstance = getInstanceStatements(postgres.getItemLabel())
+            desc_alias = getInstanceDescription(postgres.getItemLabel())
 
             if len(desc_alias["results"]["bindings"]) > 0:
                 desc_alias = desc_alias["results"]["bindings"]
@@ -75,13 +88,13 @@ def getDataInstance(updateType):
                 else:
                     __alias = None
 
-            if len(infoInstances["results"]["bindings"]) > 0:
-                instance = Entities(
-                    postgres.getQID(), None, __description, __alias, infoInstances["results"]["bindings"]
+            if len(infoInstance["results"]["bindings"]) > 0:
+                instance = Instance(
+                    postgres.getQID(), None, __description, __alias, infoInstance["results"]["bindings"]
                 )
                 if updateType == 'original':
-                    instance_updated = Entities.update(instance)
+                    instance_updated = Instance.update(instance)
                     logger.info(f'Instance Updated: {instance_updated}')
                 elif updateType == 'copy':
-                    instance_updated = Entities.updateCopy(instance)
+                    instance_updated = Instance.updateCopy(instance)
                     logger.info(f'Instance Updated: {instance_updated}')

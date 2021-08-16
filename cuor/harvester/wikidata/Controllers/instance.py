@@ -1,14 +1,14 @@
 import json
 
-from cuor.harvester.wikidata.Class.entities import Entities
+from cuor.harvester.wikidata.Class.instance import Instance
 from cuor.harvester.wikidata.Database.connection import DB_USERNAME
 from cuor.harvester.wikidata.Database.cursorPool import CursorPool
 from cuor.harvester.wikidata.logger_base import logger
 
 
-class Entities:
+class Instance:
     '''
-    DAO (Data Access Object) 
+    DAO (Data Access Object)
     CRUD: Create-Read-Update-Delete entidad instance
     '''
     __CREATE_INSTANCE = """CREATE TABLE public."instanceOf"(
@@ -17,14 +17,19 @@ class Entities:
                             "itemDescription" character varying COLLATE pg_catalog."default",
                             "itemAlias" character varying COLLATE pg_catalog."default",
                             "statements" jsonb COLLATE pg_catalog."default",
+                            "firstImport" date COLLATE pg_catalog."default" NOT NULL,
+                            "lastImport" date COLLATE pg_catalog."default" NOT NULL,
+                            "firstUserInImport" character varying COLLATE pg_catalog."default" NOT NULL,
+                            "lastUserImport" character varying COLLATE pg_catalog."default" NOT NULL,
+                            "state" character varying COLLATE pg_catalog."default NOT NULL,
                             CONSTRAINT "instanceOf_pkey" PRIMARY KEY (qid)
                         )
-                        
-                        TABLESPACE pg_default;                        
-                        
+
+                        TABLESPACE pg_default;
+
                         ALTER TABLE public."instanceOf"
                             OWNER to """ f'{DB_USERNAME}'""";
-                        
+
                         CREATE OR REPLACE FUNCTION public."before_insert_instanceofFUN"()
                             RETURNS trigger
                             LANGUAGE 'plpgsql'
@@ -32,14 +37,14 @@ class Entities:
                             COST 100
                         AS $BODY$
                         BEGIN
-                             if EXISTS (select qid FROM "instanceOf" WHERE qid = new.qid ) then 
+                             if EXISTS (select qid FROM "instanceOf" WHERE qid = new.qid ) then
                                 RETURN NULL;
                              else
                                 RETURN NEW;
                             end if;
                         END;
                         $BODY$;
-                        
+
                         CREATE TRIGGER before_insert_instanceof
                             BEFORE INSERT
                             ON public."instanceOf"
@@ -52,12 +57,12 @@ class Entities:
                             label character varying(255) COLLATE pg_catalog."default",
                             CONSTRAINT "subClass_pkey" PRIMARY KEY (qid)
                         )
-                        
+
                         TABLESPACE pg_default;
-                        
+
                         ALTER TABLE public."subClass"
                             OWNER to """ f'{DB_USERNAME}'""";
-                        
+
                         CREATE OR REPLACE FUNCTION public."before_insert_subclassFUN"()
                             RETURNS trigger
                             LANGUAGE 'plpgsql'
@@ -65,14 +70,14 @@ class Entities:
                             COST 100
                         AS $BODY$
                         BEGIN
-                             if EXISTS (select qid FROM public."subClass" WHERE qid = new.qid ) then 
+                             if EXISTS (select qid FROM public."subClass" WHERE qid = new.qid ) then
                                 RETURN NULL;
                              else
                                 RETURN NEW;
                             end if;
                         END;
                         $BODY$;
-                        
+
                         CREATE TRIGGER before_insert_subclass
                             BEFORE INSERT
                             ON public."subClass"
@@ -121,7 +126,7 @@ class Entities:
             return cursor.rowcount
 
     @classmethod
-    def createTableOrganizations(cls):
+    def createTableInstance(cls):
         with CursorPool() as cursor:
             logger.debug(cursor.mogrify(cls.__CREATE_INSTANCE))
             cursor.execute(cls.__CREATE_INSTANCE)
@@ -142,7 +147,7 @@ class Entities:
             return cursor.rowcount
 
     @classmethod
-    def createEntitiesCopy(cls):
+    def createInstanceCopy(cls):
         with CursorPool() as cursor:
             logger.debug(cursor.mogrify(cls.__CREATE_COPY_INSTANCEOF))
             cursor.execute(cls.__CREATE_COPY_INSTANCEOF)
@@ -156,7 +161,7 @@ class Entities:
             results = cursor.fetchall()
             instances = []
             for result in results:
-                instance = Entities(result[0], result[1])
+                instance = Instance(result[0], result[1])
                 instances.append(instance)
             return instances
 
@@ -175,7 +180,7 @@ class Entities:
             logger.debug(cursor.mogrify(cls.__UPDATE))
             logger.debug(f'instance to update: {instance.getQID()}')
             values = (
-                instance.getDescription(), instance.getAlias(), json.dumps(instance.getJsonb()), instance.getQID())
+                instance.getDescription(), instance.getAlias(), json.dumps(instance.getStatements()), instance.getQID())
             cursor.execute(cls.__UPDATE, values)
             return cursor.rowcount
 
@@ -184,13 +189,13 @@ class Entities:
         with CursorPool() as cursor:
             logger.debug(cursor.mogrify(cls.__UPDATE_COPY))
             logger.debug(f'instance to update: {instance.getQID()}')
-            values = (instance.getDescription(), instance.getAlias(), instance.getJsonb(), instance.getQID())
+            values = (instance.getDescription(), instance.getAlias(), instance.getStatements(), instance.getQID())
             cursor.execute(cls.__UPDATE_COPY, values)
             return cursor.rowcount
 
 
 if __name__ == '__main__':
-    instances = Entities.select()
+    instances = Instance.select()
     for instance in instances:
         logger.debug(instance)
         logger.debug(instance.getQID())
