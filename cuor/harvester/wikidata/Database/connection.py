@@ -13,7 +13,7 @@ class Connection:
     __USERNAME = 'cuor'
     __PASSWORD = 'cuor'
     __DB_PORT = '5432'
-    __HOST = current_app.config['IP_POSGRE']
+    __HOST = '10.143.231.120' #TODO: arreglar, poner la direccion de postgres segun la config
     __MIN_CON = 1
     __MAX_CON = 5
     __pool = None

@@ -5,7 +5,7 @@ from cuor.harvester.wikidata.Class.entities import Entities
 from cuor.harvester.wikidata.Class.organizations import Organizations
 from cuor.harvester.wikidata.Controllers.entities import Entities
 from cuor.harvester.wikidata.Controllers.organizations import Organizations
-from Database.SPARQL import getSparqlOrganizations, getSparqlEntities, getEntitiesStatements, getEntitiesDescription
+from cuor.harvester.wikidata.Database.SPARQL import getSparqlOrganizations, getSparqlEntities, getEntitiesStatements, getEntitiesDescription
 from cuor.harvester.wikidata.logger_base import logger
 
 

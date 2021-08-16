@@ -5,16 +5,16 @@ REST_ENABLE_CORS = True
 
 
 
-# IP_ELASTIC = '192.168.56.6'
-# IP_POSGRE = '192.168.56.3'
-# IP_RABBIT = '192.168.56.4'
-# IP_REDIS = '192.168.56.5'
+IP_ELASTIC = '10.143.231.141'
+IP_POSGRE = '10.143.231.120'
+IP_RABBIT = '10.143.231.15'
+IP_REDIS = '10.143.231.43'
 
 
-IP_ELASTIC = 'crai-sceiba-elastic0.upr.edu.cu'
-IP_POSGRE = 'crai-posgre.upr.edu.cu'
-IP_RABBIT = 'crai-sceiba-rabbit.upr.edu.cu'
-IP_REDIS = 'crai-sceiba-redis.upr.edu.cu'
+# IP_ELASTIC = 'crai-sceiba-elastic0.upr.edu.cu'
+# IP_POSGRE = 'crai-posgre.upr.edu.cu'
+# IP_RABBIT = 'crai-sceiba-rabbit.upr.edu.cu'
+# IP_REDIS = 'crai-sceiba-redis.upr.edu.cu'
 
 
 #: Since HAProxy and Nginx route all requests no matter the host header

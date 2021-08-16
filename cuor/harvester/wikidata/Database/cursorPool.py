@@ -1,4 +1,4 @@
-from Database.connection import Connection
+from cuor.harvester.wikidata.Database.connection import Connection
 from cuor.harvester.wikidata.logger_base import logger
 
 
