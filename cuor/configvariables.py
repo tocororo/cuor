@@ -10,6 +10,10 @@ IP_POSGRE = '10.143.231.120'
 IP_RABBIT = '10.143.231.15'
 IP_REDIS = '10.143.231.43'
 
+IP_ELASTIC = '10.16.64.247'
+IP_POSGRE = '10.16.64.67'
+IP_RABBIT = '10.16.64.216'
+IP_REDIS = '10.16.64.51'
 
 # IP_ELASTIC = 'crai-sceiba-elastic0.upr.edu.cu'
 # IP_POSGRE = 'crai-posgre.upr.edu.cu'
@@ -21,7 +25,7 @@ IP_REDIS = '10.143.231.43'
 #: provided, the allowed hosts variable is set to localhost. In production it
 #: should be set to the correct host and it is strongly recommended to only
 #: route correct hosts to the application.
-APP_ALLOWED_HOSTS = ['cuor.cu', 'localhost', '127.0.0.1', '10.2.83.160','192.168.1.100']
+APP_ALLOWED_HOSTS = ['cuor.cu', 'localhost', '127.0.0.1', '10.2.83.160','192.168.1.100','192.168.1.102']
 
-INTERNAL_CLIENT_APPS_SECRETS = ["Vpb7TPrQcM9FVyjxGnuuwtdlNY869DQV5KVfiTNmgT4embZK6zFTI9fz8xQS"]
+INTERNAL_CLIENT_APPS_SECRETS = ["Tg4XuoF7z6DDFlgJACf08A1eSvJYCI8VEWvYaXFiQsiYaFgFOJSJcYLmcH2a"]
 CUOR_DATA_DIRECTORY = 'data'

@@ -2,7 +2,7 @@ from cuor.harvester.wikidata.Controllers.dataCollect import collect, getDataInst
 from cuor.harvester.wikidata.Controllers.instance import Instance
 
 
-def startCollect(org: str):
+async def startCollect(org: str):
     await Instance.createTableInstance()
     await Instance.createTableSubclass()
     await collect(org)
