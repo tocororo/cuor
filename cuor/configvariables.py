@@ -3,7 +3,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 REST_ENABLE_CORS = True
 
-
+IP_ELASTIC = '10.212.33.196'
+IP_POSGRE = '10.212.33.106'
+IP_RABBIT = '10.212.33.29'
+IP_REDIS = '10.212.33.160'
+WIKIDATA_LOG = 'data/wikidata.log'
 
 # IP_ELASTIC = '192.168.56.6'
 # IP_POSGRE = '192.168.56.3'
@@ -11,10 +15,10 @@ REST_ENABLE_CORS = True
 # IP_REDIS = '192.168.56.5'
 
 
-IP_ELASTIC = 'crai-sceiba-elastic0.upr.edu.cu'
-IP_POSGRE = 'crai-posgre.upr.edu.cu'
-IP_RABBIT = 'crai-sceiba-rabbit.upr.edu.cu'
-IP_REDIS = 'crai-sceiba-redis.upr.edu.cu'
+#IP_ELASTIC = 'crai-sceiba-elastic0.upr.edu.cu'
+#IP_POSGRE = 'crai-posgre.upr.edu.cu'
+#IP_RABBIT = 'crai-sceiba-rabbit.upr.edu.cu'
+#IP_REDIS = 'crai-sceiba-redis.upr.edu.cu'
 
 
 #: Since HAProxy and Nginx route all requests no matter the host header
