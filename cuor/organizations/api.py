@@ -163,3 +163,28 @@ class OrganizationRecord(Record):
             except Exception as e:
                 pass
         return None, None
+
+    @classmethod
+    def active_org_resolver(cls, pid_value, with_deleted=False):
+        """
+        Este metodo es en esencia muy similar a get_org_by_pid, primeramente obtiene el objeto org
+        usando cualquiera de los identificadores como filtro de busqueda,
+        pero adicionalmente comprueba que el estado de la org resultante es activo, si fuere redirected
+        pues la org que devuelve es dicha org apunta,
+        en caso de que no tenga registrado en el campo redirected a quien apunta emite Error
+        en caso que se solicita una org cuyo estado es obsolete emite error 400
+        """
+        try:
+            pid, org = cls.get_org_by_pid(pid_value, with_deleted)
+            if (org["status"] == "redirected"):
+                if ("redirect" not in org):
+                    raise Exception("No se han especificados los datos de la organizacion a quien redirecciona.")
+
+                real_org_pid = org["redirect"]["value"]
+                pid, org = cls.active_org_resolver(real_org_pid, with_deleted)
+
+            return pid, org
+        except Exception as e:
+            print("error> ", str(e))
+            pass
+        return None, None

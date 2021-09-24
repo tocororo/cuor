@@ -13,6 +13,7 @@ uwsgi-tools = ">=1.1.1"
 uwsgitop = ">=0.11"
 pandas = "*"
 xlrd = "*"
+sparqlwrapper = "*"
 
 [dev-packages]
 check-manifest = ">=0.35"

@@ -21,6 +21,7 @@ from cuor.organizations.api import OrganizationRecord
 
 allow_empty = validate.Length(min=0)
 
+
 def bucket_from_context(_, context):
     """Get the record's bucket from context."""
     record = (context or {}).get('record', {})
@@ -109,7 +110,6 @@ class AddressSchemaV1(StrictKeysMixin):
     municipality_dpa = SanitizedUnicode()
 
 
-
 class MetadataSchemaBaseV1(StrictKeysMixin):
     """Schema for the record metadata."""
 
@@ -142,11 +142,10 @@ class MetadataSchemaV1(MetadataSchemaBaseV1):
     """Schema for the record metadata."""
     relationships = Nested(RelationSchemaV1, many=True)
 
+
 class MetadataSchemaRelIDsV1(MetadataSchemaBaseV1):
     """Schema for the record metadata."""
     relationships = Nested(RelationSchemaWithIDsV1, many=True)
-
-
 
 
 class RecordSearchSchemaV1(StrictKeysMixin):
