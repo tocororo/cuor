@@ -123,6 +123,7 @@ class OrganizationRecord(Record):
 
     def update(self, data, dbcommit=False, reindex=False,):
         """Update data for record."""
+
         self.updating_relations_from_existed(data)
         super(OrganizationRecord, self).update(data)
         super(OrganizationRecord, self).commit()
@@ -224,6 +225,10 @@ class OrganizationRecord(Record):
 
         org = self
         if org:
+            if 'relationships' not in org:
+                org["relationships"] = []
+            if 'relationships' not in data:
+                data["relationships"] = []
             lost_relations = list(org["relationships"])
             new_relations = list(data["relationships"])
 
