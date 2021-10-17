@@ -10,6 +10,7 @@
 from __future__ import absolute_import, print_function
 
 import traceback
+from copy import deepcopy
 from uuid import uuid4
 
 from invenio_db import db
@@ -43,47 +44,9 @@ class OrganizationRecord(Record):
         """Create or update OrganizationRecord."""
 
         # assert org_uuid
+        cls.resolve_and_update(org_uuid, data, dbcommit, reindex)
+        #if resolve_and_update do no retunr, then is not existed org, so trying to create one
 
-        resolver = Resolver(
-            pid_type=ORGANIZATION_PID_TYPE,
-            object_type=ORGANIZATION_TYPE,
-            getter=cls.get_record,
-        )
-        try:
-            persistent_identifier, org = resolver.resolve(str(org_uuid))
-            if org:
-                print("{0}={1} found".format(ORGANIZATION_PID_TYPE, org_uuid))
-                org.update(data, dbcommit=dbcommit, reindex=reindex)
-                # .update(data, dbcommit=dbcommit, reindex=reindex)
-                return org, 'updated'
-        except Exception:
-            pass
-        if IDENTIFIERS_FIELD in data:
-            for schema in identifiers_schemas:
-                for identifier in data[IDENTIFIERS_FIELD]:
-                    if schema == identifier[IDENTIFIERS_FIELD_TYPE]:
-                        #print("identifier ------    ", identifier)
-                        resolver.pid_type = schema
-                        try:
-                            persistent_identifier, org = resolver.resolve(str(identifier[IDENTIFIERS_FIELD_VALUE]))
-                            print('<<<<<<<<<<<<<<<<<<')
-                            print('Org= ', org)
-                            if org:
-                                print("{0}={1} found".format(schema, str(identifier[IDENTIFIERS_FIELD_VALUE])))
-                                org.update(data, dbcommit=dbcommit, reindex=reindex)
-                                print('>>>>>>>>>>>>>>>>>>>>')
-                                print('org updated: ', org)
-                                return org, 'updated'
-                        except PIDDoesNotExistError as pidno:
-                            print("PIDDoesNotExistError:  {0} == {1}".format(schema, str(identifier[IDENTIFIERS_FIELD_VALUE])))
-                        except (PIDDeletedError, NoResultFound) as ex:
-                             cls.__delete_pids_without_object(data[IDENTIFIERS_FIELD])
-                        except Exception as e:
-                            print('-------------------------------')
-                            #print(str(e))
-                            print(traceback.format_exc())
-                            print('-------------------------------')
-                            pass
         print("no pids found, creating organization")
         created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
         return created_org, 'created'
@@ -111,8 +74,56 @@ class OrganizationRecord(Record):
             print("-------- DELETING PID ERROR ------------")
             print(traceback.format_exc())
 
+    @classmethod
+    def resolve_and_update(cls, org_uuid, data, dbcommit=False, reindex=False, **kwargs):
+        print("first in resolve and update ==============================")
+        print(data)
+        print("===========================================================")
+        resolver = Resolver(
+            pid_type=ORGANIZATION_PID_TYPE,
+            object_type=ORGANIZATION_TYPE,
+            getter=cls.get_record,
+        )
+        try:
+            persistent_identifier, org = resolver.resolve(str(org_uuid))
+            if org:
+                print("{0}={1} found".format(ORGANIZATION_PID_TYPE, org_uuid))
+                org.update(data, dbcommit=dbcommit, reindex=reindex)
+                # .update(data, dbcommit=dbcommit, reindex=reindex)
+                return org, 'updated'
+        except Exception:
+            pass
+        if IDENTIFIERS_FIELD in data: #Si no lo encontro por el uudi igual se intenta buscar desde cualquier otri pid
+            for schema in identifiers_schemas:
+                for identifier in data[IDENTIFIERS_FIELD]:
+                    if schema == identifier[IDENTIFIERS_FIELD_TYPE]:
+                        # print("identifier ------    ", identifier)
+                        resolver.pid_type = schema
+                        try:
+                            persistent_identifier, org = resolver.resolve(str(identifier[IDENTIFIERS_FIELD_VALUE]))
+                            print('<<<<<<<<<<<<<<<<<<')
+                            print('Org= ', org)
+                            if org:
+                                print("{0}={1} found".format(schema, str(identifier[IDENTIFIERS_FIELD_VALUE])))
+                                org.update(data, dbcommit=dbcommit, reindex=reindex)
+                                print('>>>>>>>>>>>>>>>>>>>>')
+                                print('org updated: ', org)
+                                return org, 'updated'
+                        except PIDDoesNotExistError as pidno:
+                            print("PIDDoesNotExistError:  {0} == {1}".format(schema,
+                                                                             str(identifier[IDENTIFIERS_FIELD_VALUE])))
+                        except (PIDDeletedError, NoResultFound) as ex:
+                            cls.__delete_pids_without_object(data[IDENTIFIERS_FIELD])
+                        except Exception as e:
+                            print('-------------------------------')
+                            # print(str(e))
+                            print(traceback.format_exc())
+                            print('-------------------------------')
+                            pass
+
     def update(self, data, dbcommit=False, reindex=False,):
         """Update data for record."""
+        self.updating_relations_from_existed(data)
         super(OrganizationRecord, self).update(data)
         super(OrganizationRecord, self).commit()
 
@@ -188,3 +199,134 @@ class OrganizationRecord(Record):
             print("error> ", str(e))
             pass
         return None, None
+
+    @classmethod
+    def check_organization_before_crud(cls, uuid, data, adding=False, on_demand=False):
+        """
+        Este metodo debe ser capaz de revisar las cuestiones de reglas de negocios para la adicion
+        y para la modificacion de metadatos de la organizacion
+        param data es el json de la org
+        param adding dice si esta en la accion de adicionar o de editar
+        La estructura del json no hay q validarla, eso lo hace el metodo commit.
+
+        debe verificar si es adicionar:
+        si es cubana que no tenga incluido entre los datos q se quieren adicionar reup, ni orgaid, ni uniid
+        (estos datos solo se toman desde la ONEI)
+        debe tener como parent alguna org con reup, no se permite adicionar org de primer nivel
+
+        debe verificar cuando modifica que no cambia el reup si existe
+
+        """
+
+        return True
+
+    def updating_relations_from_existed(self, data):
+
+        org = self
+        if org:
+            lost_relations = list(org["relationships"])
+            new_relations = list(data["relationships"])
+
+            for old_item in org["relationships"]:
+                exist = False
+                #no usar lista.remove porque puede haber diferencia en el campo identifiers y se la misma org
+                old_aux = new_aux = None
+                for new_item in data["relationships"]:
+                    if "id" in old_item:
+                        old_aux = old_item["id"]
+                    if "id" in new_item:
+                        new_aux = new_item["id"]
+                    #tuve q usar estos aux porque hay errores en los datos de la base de datos en el campop relationships
+                    #no esta el id en ocasiones
+                    if old_aux and new_aux and  old_aux == new_aux and old_item["type"] == new_item["type"]:
+                        exist = True
+                        new_relations.remove(new_item)
+                        lost_relations.remove(old_item)
+                        #si existe en las relaciones que ya tenia, no interesa si la nueva viene con mas pids
+                        #el final esta y por el uuid se recupera, pero si cambia el tipo de relacion
+                        #se agrega como una nueva, eliminando la anterior que es la misma org pero con diferente tipo
+                        next()
+            actual = {
+                "id" : data["id"],
+                "identifiers" : data["identifiers"],
+                "label" : data["name"]
+            }
+            print("actuallllllllllllllllllllllllllllll")
+            print(actual)
+            print("````````````````````````````````````")
+            self.deleting_relations(lost_relations, actual)
+            self.adding_relations(new_relations, actual)
+
+
+    def deleting_relations(self, lost_relations, actual):
+        """
+        param lost_relations tiene los elementos del campo relationships que ya no estaran mas en la org,
+        la idea es recorrer cada una de estas orgs e informarles que ya no tienen relacion,
+        param actual ofrece un dict q solo falta el type de relation para que pueda ser usado al encontrar indice
+        param resolver es capaz de resolver dado un uuid la organizacion
+        """
+
+        for relation in lost_relations:
+            pid = ""
+            if "id" in relation:
+                pid = relation["id"]
+            elif "identifiers" in relation and len(relation["identifiers"]) > 0:
+                pid = relation["identifiers"][0]["value"]
+            #hice esto anterior por errores en los datos en la base de datos
+            persistent_identifier, org = OrganizationRecord.get_org_by_pid(pid)
+            if org:
+                print("--------------deleting relationships--------------------------")
+                if relation["type"] == "parent":
+                    actual["type"] = "child"
+                elif relation["type"] == "child":
+                    actual["type"] = "parent"
+                else:
+                    actual["type"] = relation["type"]
+                print(actual)
+
+                rels = org["relationships"]
+                try:
+                    rels.remove(actual)
+                    org.commit()
+                except ValueError:
+                    print("ValueError, porque no esta en la lista de relaciones")
+                    pass
+                print(org)
+                print("-----------------------------------------------------------------")
+                # .update(data, dbcommit=dbcommit, reindex=reindex)
+
+    def adding_relations(self, new_relations, actual):
+        """
+        param new_relations nuevas orgs con las que tendra actual relacion,
+        debe informarse a cada una de su nueva relacion
+        param actual ofrece un dict q solo falta el type de relation para que pueda ser usado al encontrar indice
+        """
+
+        for relation in new_relations:
+            pid = ""
+            if "id" in relation:
+                pid = relation["id"]
+            elif "identifiers" in relation and len(relation["identifiers"]) > 0:
+                pid = relation["identifiers"][0]["value"]
+            # hice esto anterior por errores en los datos en la base de datos
+            persistent_identifier, org = OrganizationRecord.get_org_by_pid(pid)
+
+            if org:
+                print("--------------adding relationships--------------------------")
+                print(org)
+                print("===============")
+                print("{0}={1} found".format(org["name"], relation["id"]))
+                if relation["type"] == "parent":
+                    actual["type"] = "child"
+                elif relation["type"] == "child":
+                    actual["type"] = "parent"
+                else:
+                    actual["type"] = relation["type"]
+                print(actual)
+
+                org["relationships"].append(actual)
+                print(org)
+                print("-----------------------------------------------------------------")
+                org.commit()
+                # .update(data, dbcommit=dbcommit, reindex=reindex)
+

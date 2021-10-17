@@ -24,7 +24,7 @@ from invenio_previewer.proxies import current_previewer
 
 from cuor.organizations.api import OrganizationRecord
 from cuor.organizations.marshmallow import MetadataSchemaRelIDsV1
-from cuor.organizations.serializers import json_v1_response, json_v1
+from cuor.organizations.serializers import json_v1_response, json_v1, org_json_v1
 
 blueprint = Blueprint(
     'cuor_organizations',
@@ -209,23 +209,24 @@ def edit_organization(uuid):
     """
     try:
         if not request.is_json:
-            raise Exception("No se especifica datos en formato json para la curacion")
-
-
+            raise Exception("No se especifican datos en formato json para la curacion")
         input_data = request.json
-        org = json_v1.transform_record(input_data["id"], input_data)
+        print("//////////////////////////////////////////////////////")
+        print(input_data)
+        print("///////////////////////////////////////////////////////")
+        #org = org_json_v1.transform_record(input_data["id"], input_data)
         print("-------------------------------------------------------------")
-        print(org)
+        #print(org)
         print("------------------------------------------------------------")
-        #msg, source = OrganizationRecord.create_or_update(input_data["id"], input_data, dbcommit=True, reindex=True)
+        org, msg = OrganizationRecord.resolve_and_update(input_data["id"], input_data, dbcommit=True, reindex=False)
         if not org:
-            raise Exception("msg")
-        #
+            raise Exception("No se encontro record de organizacion")
+
         # notification = NotificationSchema()
         # notification.classification = NotificationType.INFO
         # notification.description = _('Nueva fuente ingresada, requiere revisión de un gestor {0}'.format(source.name))
         # notification.emiter = _('Sistema')
-        #
+
         # msg, users = SourcesDeprecated.get_user_ids_source_managers(source.uuid)
         # if users:
         #     for user_id in users:
@@ -235,7 +236,12 @@ def edit_organization(uuid):
         # return iroko_json_response(IrokoResponseStatus.SUCCESS, \
         #                            'ok', 'source', \
         #                            {'data': source_schema.dump(source), 'count': 1})
-        return jsonify({'SUCCES':"Organizacion modificada"})
+        print("entra ala api de editar organizaciones...........................................")
+        return jsonify({
+            'SUCCES':"Organizacion modificada",
+            'message':msg,
+            'org':org
+        })
     except Exception as e:
         return jsonify({
             'ERROR': str(e),

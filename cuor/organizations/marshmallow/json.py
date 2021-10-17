@@ -130,6 +130,7 @@ class MetadataSchemaBaseV1(StrictKeysMixin):
     labels = Nested(LabelSchemaV1, many=True)
     relationships = Nested(RelationSchemaV1, many=True)
     addresses = Nested(AddressSchemaV1, many=True)
+    redirect = IdentifierSchemaV1()
 
     _schema = GenFunction(
         attribute="$schema",

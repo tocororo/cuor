@@ -15,13 +15,14 @@ from invenio_records_rest.serializers.response import (
     search_responsify,
 )
 
-from cuor.organizations.marshmallow import RecordSearchSchemaV1
+from cuor.organizations.marshmallow import RecordSearchSchemaV1, MetadataSchemaBaseV1
 from ..marshmallow import RecordSchemaV1
 
 # Serializers
 # ===========
 #: JSON serializer definition.
 json_v1 = JSONSerializer(RecordSchemaV1, replace_refs=True)
+org_json_v1 = JSONSerializer(MetadataSchemaBaseV1, replace_refs=True)
 json_v1_for_search = JSONSerializer(RecordSearchSchemaV1, replace_refs=True)
 
 # Records-REST serializers
