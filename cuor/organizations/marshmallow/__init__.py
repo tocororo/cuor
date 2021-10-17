@@ -9,6 +9,6 @@
 
 from __future__ import absolute_import, print_function
 
-from .json import MetadataSchemaV1, MetadataSchemaRelIDsV1, RecordSchemaV1, RecordSearchSchemaV1
+from .json import MetadataSchemaV1, MetadataSchemaRelIDsV1, RecordSchemaV1, RecordSearchSchemaV1, MetadataSchemaBaseV1
 
-__all__ = ('MetadataSchemaV1', 'MetadataSchemaRelIDsV1' , 'RecordSchemaV1', 'RecordSearchSchemaV1')
+__all__ = ('MetadataSchemaV1', 'MetadataSchemaRelIDsV1' , 'RecordSchemaV1', 'RecordSearchSchemaV1', 'MetadataSchemaBaseV1')

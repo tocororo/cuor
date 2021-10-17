@@ -25,6 +25,7 @@ identifiers_schemas = [
         "reup",
         "orgaid",
         "uniid",
+        "sceibaid"
     ]
 
 

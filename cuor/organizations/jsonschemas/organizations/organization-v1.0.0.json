@@ -159,7 +159,7 @@
                   "type": "string",
                   "enum": [
                     "grid",
-                    "wikidata",
+                    "wkdata",
                     "ror",
                     "isni",
                     "orgref",
@@ -378,7 +378,8 @@
             "fudref",
             "reup",
             "orgaid",
-            "uniid"
+            "uniid",
+            "sceibaid"
           ]
         },
         "value": {
