@@ -44,12 +44,15 @@ class OrganizationRecord(Record):
         """Create or update OrganizationRecord."""
 
         # assert org_uuid
-        cls.resolve_and_update(org_uuid, data, dbcommit, reindex)
+        org, msg = cls.resolve_and_update(org_uuid, data, dbcommit, reindex)
         #if resolve_and_update do no retunr, then is not existed org, so trying to create one
+        if not org:
+            print("no pids found, creating organization")
+            created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
+            org = created_org
+            msg = 'created'
 
-        print("no pids found, creating organization")
-        created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
-        return created_org, 'created'
+        return org, msg
 
     @classmethod
     def __delete_pids_without_object(cls, pid_list):
