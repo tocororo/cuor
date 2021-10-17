@@ -237,7 +237,7 @@ class OrganizationRecord(Record):
 
             for old_item in org["relationships"]:
                 exist = False
-                #no usar lista.remove porque puede haber diferencia en el campo identifiers y se la misma org
+                #no usar lista.remove porque puede haber diferencia en el campo identifiers y sea la misma org
                 old_aux = new_aux = None
                 for new_item in data["relationships"]:
                     if "id" in old_item:
@@ -253,7 +253,7 @@ class OrganizationRecord(Record):
                         #si existe en las relaciones que ya tenia, no interesa si la nueva viene con mas pids
                         #el final esta y por el uuid se recupera, pero si cambia el tipo de relacion
                         #se agrega como una nueva, eliminando la anterior que es la misma org pero con diferente tipo
-                        next()
+                        break
             actual = {
                 "id" : data["id"],
                 "identifiers" : data["identifiers"],
