@@ -218,7 +218,7 @@ def edit_organization(uuid):
         print("-------------------------------------------------------------")
         #print(org)
         print("------------------------------------------------------------")
-        org, msg = OrganizationRecord.resolve_and_update(input_data["id"], input_data, dbcommit=True, reindex=False)
+        org, msg = OrganizationRecord.resolve_and_update(input_data["id"], input_data)
         if not org:
             raise Exception("No se encontro record de organizacion")
 
