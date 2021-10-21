@@ -40,15 +40,15 @@ class OrganizationRecord(Record):
     _schema = "organizations/organization-v1.0.0.json"
 
     @classmethod
-    def create_or_update(cls, org_uuid, data, dbcommit=False, reindex=False, **kwargs):
+    def create_or_update(cls, org_uuid, data, **kwargs):
         """Create or update OrganizationRecord."""
 
         # assert org_uuid
-        org, msg = cls.resolve_and_update(org_uuid, data, dbcommit, reindex)
+        org, msg = cls.resolve_and_update(org_uuid, data)
         #if resolve_and_update do no retunr, then is not existed org, so trying to create one
         if not org:
             print("no pids found, creating organization")
-            created_org = cls.create(data, id_=org_uuid, dbcommit=dbcommit, reindex=reindex)
+            created_org = cls.create(data, id_=org_uuid)
             org = created_org
             msg = 'created'
 
@@ -78,7 +78,7 @@ class OrganizationRecord(Record):
             print(traceback.format_exc())
 
     @classmethod
-    def resolve_and_update(cls, org_uuid, data, dbcommit=False, reindex=False, **kwargs):
+    def resolve_and_update(cls, org_uuid, data, **kwargs):
         print("first in resolve and update ==============================")
         print(data)
         print("===========================================================")
@@ -91,7 +91,7 @@ class OrganizationRecord(Record):
             persistent_identifier, org = resolver.resolve(str(org_uuid))
             if org:
                 print("{0}={1} found".format(ORGANIZATION_PID_TYPE, org_uuid))
-                org.update(data, dbcommit=dbcommit, reindex=reindex)
+                org.update(data)
                 # .update(data, dbcommit=dbcommit, reindex=reindex)
                 return org, 'updated'
         except Exception:
@@ -108,7 +108,7 @@ class OrganizationRecord(Record):
                             print('Org= ', org)
                             if org:
                                 print("{0}={1} found".format(schema, str(identifier[IDENTIFIERS_FIELD_VALUE])))
-                                org.update(data, dbcommit=dbcommit, reindex=reindex)
+                                org.update(data)
                                 print('>>>>>>>>>>>>>>>>>>>>')
                                 print('org updated: ', org)
                                 return org, 'updated'
@@ -124,22 +124,20 @@ class OrganizationRecord(Record):
                             print('-------------------------------')
                             pass
 
-    def update(self, data, dbcommit=False, reindex=False,):
+    def update(self, data):
         """Update data for record."""
 
         self.updating_relations_from_existed(data)
         super(OrganizationRecord, self).update(data)
         super(OrganizationRecord, self).commit()
 
-        if dbcommit:
-            db.session.commit()
-            if reindex:
-                RecordIndexer().index(self)
+        db.session.commit()
+        RecordIndexer().index(self)
 
         return self
 
     @classmethod
-    def create(cls, data, id_, dbcommit=False, reindex=False, **kwargs):
+    def create(cls, data, id_=None, **kwargs):
         """Create a new OrganizationRecord."""
         data['$schema'] = current_jsonschemas.path_to_url(cls._schema)
         if not id_:
@@ -151,10 +149,9 @@ class OrganizationRecord(Record):
 
         org = super(OrganizationRecord, cls).create(data=data, id_=id_, **kwargs)
 
-        if dbcommit:
-            db.session.commit()
-            if reindex:
-                RecordIndexer().index(org)
+        db.session.commit()
+        RecordIndexer().index(org)
+
         return org
 
     @classmethod
