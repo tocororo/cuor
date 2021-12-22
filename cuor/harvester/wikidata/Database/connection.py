@@ -11,7 +11,7 @@ class Connection:
     __USERNAME = 'wdorgs'
     __PASSWORD = 'wdorgs'
     __DB_PORT = '5432'
-    __HOST = 'localhost'
+    __HOST = '10.143.231.120' #TODO: arreglar, poner la direccion de postgres segun la config
     __MIN_CON = 1
     __MAX_CON = 5
     __pool = None

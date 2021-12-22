@@ -149,8 +149,10 @@ data/
 
 .vscode/
 
-cuor/configvariables.py
+configvariables.py
 
 scripts/
 
 .DS_Store
+
+log/
