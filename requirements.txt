@@ -103,7 +103,7 @@ invenio-search-ui==1.2.0
 invenio-theme==1.1.4
 invenio-userprofiles==1.1.1
 ipaddress==1.0.23
-ipython==7.15.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 isort==4.3.21
 itsdangerous==1.1.0
